@@ -15,6 +15,7 @@ class Teacher(UserProfileBase):
     # Add customer-specific fields
     phone_number = models.CharField(max_length=15)
     address = models.TextField()
+    print("Hello")
 
 
 class Student(UserProfileBase):
