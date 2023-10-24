@@ -13,17 +13,16 @@ def login_page(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
-
+        User = get_user_model()
         if not User.objects.filter(username=username).exists():
             messages.error(request, "Invalid Username")
             return redirect("login_page")
-        user = authenticate(username=username, password=password)
+        user = authenticate(request, username=username, password=password)
 
-        if user is None:
-            messages.error(request, "Invalid Password")
-            return redirect("login_page")
-        else:
+        if user is not None:
             login(request, user)
-            return redirect("admin/")
+            messages.error(request, "Success")
+        else:
+            messages.error(request, "Invalid password")
 
     return render(request, "login.html")

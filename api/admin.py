@@ -5,11 +5,11 @@ from .models import Teacher, Student, RTE
 
 
 class TeacherAdmin(admin.ModelAdmin):
-    list_display = ["username", "email"]
+    pass
 
 
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ["username", "email"]
+    list_display = ["user"]
 
 
 admin.site.register(Teacher, TeacherAdmin)
