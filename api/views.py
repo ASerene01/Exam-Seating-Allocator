@@ -14,15 +14,22 @@ def login_page(request):
         username = request.POST.get("username")
         password = request.POST.get("password")
         User = get_user_model()
+
         if not User.objects.filter(username=username).exists():
             messages.error(request, "Invalid Username")
             return redirect("login_page")
         user = authenticate(request, username=username, password=password)
-
+        print(user.user_type)
         if user is not None:
+            if user.user_type == "admin":
+                return redirect("admin_home/")
             login(request, user)
             messages.error(request, "Success")
         else:
             messages.error(request, "Invalid password")
 
     return render(request, "login.html")
+
+
+def admin_home(request):
+    return render(request, "adminHome.html")
