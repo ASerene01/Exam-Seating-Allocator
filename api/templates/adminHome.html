@@ -1,0 +1,21 @@
+{%extends "base.html"%} {%block start%}
+<div class="container mt-5">
+  <form
+    class="col-6 mx-auto card p-3 shadow-lg"
+    method="post"
+    enctype="multipart/form-data"
+  >
+    {% csrf_token %}
+
+    <a
+      href="/register/"
+      class="btn btn-secondary"
+      tabindex="-1"
+      role="button"
+      aria-disabled="true"
+      >Register</a
+    >
+
+    {%endblock%}
+  </form>
+</div>

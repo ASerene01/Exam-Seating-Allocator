@@ -4,10 +4,14 @@ from .models import Teacher, Student, RTE
 
 
 class TeacherAdmin(admin.ModelAdmin):
-    pass
+    list_display = ["user"]
 
 
 class StudentAdmin(admin.ModelAdmin):
+    list_display = ["user"]
+
+
+class RTEAdmin(admin.ModelAdmin):
     list_display = ["user"]
 
 
@@ -20,4 +24,4 @@ class UserAdmin(admin.ModelAdmin):
 admin.site.register(User, UserAdmin)
 admin.site.register(Teacher, TeacherAdmin)
 admin.site.register(Student, StudentAdmin)
-admin.site.register(RTE)
+admin.site.register(RTE, RTEAdmin)
