@@ -20,10 +20,10 @@ def login_page(request):
             return redirect("login_page")
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            if user.user_type == "admin":
-                return redirect("admin_home/")
             login(request, user)
             messages.error(request, "Success")
+            if user.user_type == "admin":
+                return redirect("admin_home/")
         else:
             messages.error(request, "Invalid password")
 
@@ -43,7 +43,7 @@ def register(request):
         email = data.get("email")
         user_type = (data.get("user_type")).lower()
         password = data.get("password")
-        print(user_type)
+
         user = User.objects.filter(username=username)
         if user.exists():
             messages.info(request, "Username already registered")
@@ -87,3 +87,8 @@ def register(request):
         messages.info(request, "Successfully registered")
         return redirect("/register/")
     return render(request, "register.html")
+
+
+def logout_page(request):
+    logout(request)
+    return redirect("login_page")
