@@ -12,11 +12,13 @@
       integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
       crossorigin="anonymous"
     />
+    {% if style %}
     <link
       rel="stylesheet"
       type="text/css"
       href="{% static 'myapp/Styles/'|add:style %}.css"
     />
+    {% endif %}
     <style>
       table,
       th,
@@ -29,7 +31,7 @@
   <body>
     <nav class="navbar dark p-3 bg-secondary shadow-lg">
       <div class="container-fluid">
-        <a class="navbar-brand">Recipo</a>
+        <a class="navbar-brand">Exam Seating Allocator</a>
         <form class="d-flex" role="search">
           {%if request.user.is_authenticated%}
           <a href="/logout/" class="btn btn-success" type="submit">Logout</a>
@@ -41,7 +43,8 @@
         </form>
       </div>
     </nav>
-    {% block start %} {% endblock %}
+    {% block start %} {% endblock %} {% if style %}
     <script src="{% static 'myapp/Javascript/'|add:style %}.js"></script>
+    {% endif %}
   </body>
 </html>
