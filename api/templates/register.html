@@ -14,24 +14,26 @@
     </div>
 
     {% endif %}
-    <div class="mb-3">
-      <label for="InputFirstName" class="form-label">First Name</label>
-      <input
-        type="text"
-        class="form-control"
-        id="InputFirstName"
-        name="firstname"
-        value="{{data.firstname.value}}"
-      />
-    </div>
-    <div class="mb-3">
-      <label for="InputLastName" class="form-label">Last Name</label>
-      <input
-        type="text"
-        class="form-control"
-        id="InputLastName"
-        name="lastname"
-      />
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label for="InputFirstName" class="form-label">First Name</label>
+        <input
+          type="text"
+          class="form-control"
+          id="InputFirstName"
+          name="firstname"
+          value="{{ data.firstname.value }}"
+        />
+      </div>
+      <div class="col-md-6 mb-3">
+        <label for="InputLastName" class="form-label">Last Name</label>
+        <input
+          type="text"
+          class="form-control"
+          id="InputLastName"
+          name="lastname"
+        />
+      </div>
     </div>
     <div class="mb-3">
       <label for="InputUsername" class="form-label">Username</label>
@@ -49,17 +51,34 @@
         We'll never share your email or username with anyone else.
       </div>
     </div>
-    <label for="userType" class="form-label">User Type</label>
-    <select
-      name="user_type"
-      class="form-select bg-dark text-white mb-3"
-      aria-label="Student"
-      style="width: 30%"
-    >
-      <option selected value="Student">Student</option>
-      <option value="Admin">Admin</option>
-      <option value="Teacher">Teacher</option>
-    </select>
+    <div class="row">
+      <div class="col-md-7 mb-3">
+        <label for="userType" class="form-label">User Type</label>
+        <select
+          name="user_type"
+          id="userType"
+          class="form-select bg-dark text-white mb-3"
+          aria-label="Student"
+          style="width: 30%"
+        >
+          <option selected value="Admin">Admin</option>
+          <option value="Student">Student</option>
+          <option value="Teacher">Teacher</option>
+        </select>
+      </div>
+      <div class="col-md-3 mb-3 student-options">
+        <label for="studentYear" class="form-label">Section</label>
+        <select
+          name="student_year"
+          class="form-select bg-dark text-white"
+          aria-label="Student Year"
+        >
+          <option value="C1">C1</option>
+          <option value="C2">C2</option>
+          <option value="C3">C3</option>
+        </select>
+      </div>
+    </div>
     <div class="mb-3">
       <label for="exampleInputPassword1" class="form-label">Password</label>
       <input

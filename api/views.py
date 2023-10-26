@@ -86,7 +86,8 @@ def register(request):
             user.groups.add(teacher_group)
         messages.info(request, "Successfully registered")
         return redirect("/register/")
-    return render(request, "register.html")
+    context = {"style": "register"}
+    return render(request, "register.html", context)
 
 
 def logout_page(request):
