@@ -27,6 +27,7 @@ urlpatterns = [
     path("admin_home/", admin_home, name="admin_home"),
     path("register/", register, name="register"),
     path("logout/", logout_page, name="logout"),
+    path("delete-user/<id>", deleteuser, name="delete-user"),
 ]
 
 

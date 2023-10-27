@@ -104,3 +104,11 @@ def register(request):
 def logout_page(request):
     logout(request)
     return redirect("login_page")
+
+
+@login_required(login_url="/login/")
+def deleteuser(request, id):
+    queryset = User.objects.get(id=id)
+    print(queryset)
+    queryset.delete()
+    return redirect("admin_home")
