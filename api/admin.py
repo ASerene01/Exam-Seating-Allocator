@@ -16,9 +16,24 @@ class RTEAdmin(admin.ModelAdmin):
 
 
 class UserAdmin(admin.ModelAdmin):
-    list_display = ("username", "user_type", "first_name", "last_name", "email")
+    list_display = (
+        "username",
+        "user_type",
+        "first_name",
+        "last_name",
+        "email",
+        "user_image",
+    )
     # Add 'user_type' to the fields attribute to make it editable in the admin panel
-    fields = ("username", "user_type", "first_name", "last_name", "email", "password")
+    fields = (
+        "username",
+        "user_type",
+        "first_name",
+        "last_name",
+        "email",
+        "password",
+        "user_image",
+    )
 
 
 admin.site.register(User, UserAdmin)

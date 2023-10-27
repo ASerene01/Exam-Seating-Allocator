@@ -6,14 +6,17 @@ from django.contrib import messages
 User = get_user_model()
 from django.shortcuts import render, redirect
 from .models import *
+from django.contrib.auth.decorators import login_required
 
 
 # Create your views here.
+User = get_user_model()
+
+
 def login_page(request):
     if request.method == "POST":
         username = request.POST.get("username")
         password = request.POST.get("password")
-        User = get_user_model()
 
         if not User.objects.filter(username=username).exists():
             messages.error(request, "Invalid Username")
@@ -30,10 +33,14 @@ def login_page(request):
     return render(request, "login.html")
 
 
+@login_required(login_url="login_page")
 def admin_home(request):
-    return render(request, "adminHome.html")
+    queryset = User.objects.all()
+    context = {"AllUsers": queryset}
+    return render(request, "adminHome.html", context)
 
 
+@login_required(login_url="login_page")
 def register(request):
     if request.method == "POST":
         data = request.POST
@@ -43,7 +50,9 @@ def register(request):
         email = data.get("email")
         user_type = (data.get("user_type")).lower()
         password = data.get("password")
-
+        user_image = request.FILES.get("user_image")
+        if user_image is None:
+            user_image = "Users/default.jpg"
         user = User.objects.filter(username=username)
         if user.exists():
             messages.info(request, "Username already registered")
@@ -58,6 +67,7 @@ def register(request):
             username=username,
             email=email,
             user_type=user_type,
+            user_image=user_image,
         )
         user.set_password(password)
         user.save()
@@ -86,6 +96,7 @@ def register(request):
             user.groups.add(teacher_group)
         messages.info(request, "Successfully registered")
         return redirect("/register/")
+
     context = {"style": "register"}
     return render(request, "register.html", context)
 
