@@ -2,6 +2,8 @@ from django.shortcuts import render
 from django.contrib.auth import get_user_model
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.conf import settings
+import os
 
 User = get_user_model()
 from django.shortcuts import render, redirect
@@ -109,6 +111,18 @@ def logout_page(request):
 @login_required(login_url="/login/")
 def deleteuser(request, id):
     queryset = User.objects.get(id=id)
-    print(queryset)
+    image_path = queryset.user_image.url
+    new_image = image_path.replace("/media/", "/")
+    media_root = settings.MEDIA_ROOT
+    to_delete_path = media_root + new_image
+    to_delete_path = to_delete_path.replace("/", "\\")
+    for root, dirs, files in os.walk(media_root):
+        for file in files:
+            file_path = os.path.join(root, file)
+            file_path = file_path.replace("/", "\\")
+            if to_delete_path == file_path:
+                print("User Image removed")
+                print(file_path)
+                os.remove(file_path)
     queryset.delete()
     return redirect("admin_home")
