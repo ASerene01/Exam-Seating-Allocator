@@ -28,6 +28,7 @@ urlpatterns = [
     path("register/", register, name="register"),
     path("logout/", logout_page, name="logout"),
     path("delete-user/<id>", deleteuser, name="delete-user"),
+    path("register_course/", register_course, name="register_course"),
 ]
 
 

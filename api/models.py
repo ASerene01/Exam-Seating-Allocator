@@ -22,9 +22,18 @@ class RTE(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
 
+class Course(models.Model):
+    name = models.CharField(max_length=100)
+
+
+class Section(models.Model):
+    section_name = models.CharField(max_length=50)
+    courses = models.ManyToManyField(Course, related_name="courses_section")
+
+
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    # courses = models.ManyToManyField(Course, related_name="students")
+    sections = models.ManyToManyField(Section, related_name="students")
 
 
 class Teacher(models.Model):

@@ -22,7 +22,7 @@
           class="form-control"
           id="InputFirstName"
           name="firstname"
-          value="{{ data.firstname.value }}"
+          value="{{ data.firstname }}"
         />
       </div>
       <div class="col-md-6 mb-3">
@@ -69,13 +69,13 @@
       <div class="col-md-3 mb-3 student-options">
         <label for="studentYear" class="form-label">Section</label>
         <select
-          name="student_year"
+          name="student_course"
           class="form-select bg-dark text-white"
-          aria-label="Student Year"
+          aria-label="Student Course"
         >
-          <option value="C1">C1</option>
-          <option value="C2">C2</option>
-          <option value="C3">C3</option>
+          {%for course in Courses%}
+          <option value="{{course.name}}">{{course.name}}</option>
+          {%endfor%}
         </select>
       </div>
     </div>

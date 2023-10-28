@@ -58,6 +58,9 @@ def register(request):
         user = User.objects.filter(username=username)
         if user.exists():
             messages.info(request, "Username already registered")
+            request.POST.field1 = {
+                "value": first_name,
+            }
             return redirect("/register/")
         useremail = User.objects.filter(email=email)
         if useremail.exists():
@@ -98,8 +101,8 @@ def register(request):
             user.groups.add(teacher_group)
         messages.info(request, "Successfully registered")
         return redirect("/register/")
-
-    context = {"style": "register"}
+    querysetcourse = Course.objects.all()
+    context = {"style": "register", "Courses": querysetcourse}
     return render(request, "register.html", context)
 
 
@@ -126,3 +129,23 @@ def deleteuser(request, id):
                 os.remove(file_path)
     queryset.delete()
     return redirect("admin_home")
+
+
+def register_course(request):
+    if request.method == "POST":
+        data = request.POST
+        course = data.get("course")
+        coursename = Course.objects.filter(name=course)
+        if coursename.exists():
+            messages.info(request, "Course already registered")
+            return redirect("/register_course/")
+        courseobject = Course.objects.create(
+            name=course,
+        )
+        courseobject.save()
+
+        messages.info(request, "Course successfully registered")
+        return redirect("/admin_home/")
+    queryset = Course.objects.all()
+    context = {"Courses": queryset}
+    return render(request, "register_course.html", context)
