@@ -111,10 +111,11 @@ def logout_page(request):
     return redirect("login_page")
 
 
-@login_required(login_url="/login/")
+@login_required(login_url="login_page")
 def deleteuser(request, id):
     queryset = User.objects.get(id=id)
     image_path = queryset.user_image.url
+    to_not_delete = "C:\\Users\\amitb\\OneDrive\\Desktop\\FYP Project\\static\\myapp\\Pictures\\Users\\default.jpg"
     new_image = image_path.replace("/media/", "/")
     media_root = settings.MEDIA_ROOT
     to_delete_path = media_root + new_image
@@ -123,24 +124,30 @@ def deleteuser(request, id):
         for file in files:
             file_path = os.path.join(root, file)
             file_path = file_path.replace("/", "\\")
-            if to_delete_path == file_path:
+            if to_delete_path == file_path and to_not_delete != to_delete_path:
                 print("User Image removed")
-                print(file_path)
                 os.remove(file_path)
     queryset.delete()
+    messages.info(request, "Successfully Deleted")
     return redirect("admin_home")
 
 
+@login_required(login_url="login_page")
 def register_course(request):
     if request.method == "POST":
         data = request.POST
         course = data.get("course")
-        coursename = Course.objects.filter(name=course)
+        fieldofstudy = (data.get("fieldofstudy")).lower()
+        year = (data.get("year")).lower()
+        semester = (data.get("semester")).lower()
+        coursename = Course.objects.filter(
+            name=course, fieldofstudy=fieldofstudy, year=year, semester=semester
+        )
         if coursename.exists():
             messages.info(request, "Course already registered")
             return redirect("/register_course/")
         courseobject = Course.objects.create(
-            name=course,
+            name=course, fieldofstudy=fieldofstudy, year=year, semester=semester
         )
         courseobject.save()
 
@@ -149,3 +156,10 @@ def register_course(request):
     queryset = Course.objects.all()
     context = {"Courses": queryset}
     return render(request, "register_course.html", context)
+
+
+@login_required(login_url="login_page")
+def deletecourse(request, id):
+    queryset = Course.objects.get(id=id)
+    queryset.delete()
+    return redirect("register_course")

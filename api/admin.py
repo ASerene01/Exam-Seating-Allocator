@@ -1,14 +1,20 @@
 from django.contrib import admin
 from .models import User
-from .models import Teacher, Student, RTE
+from .models import *
 
 
 class TeacherAdmin(admin.ModelAdmin):
     list_display = ["user"]
 
 
+class CourseAdmin(admin.ModelAdmin):
+    list_display = ("name", "fieldofstudy", "year", "semester")
+    fields = ("name", "fieldofstudy", "year", "semester")
+
+
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ["user"]
+    list_display = ["user", "fieldofstudy", "year", "semester", "section"]
+    fields = ("user", "fieldofstudy", "year", "semester", "section")
 
 
 class RTEAdmin(admin.ModelAdmin):
@@ -40,3 +46,4 @@ admin.site.register(User, UserAdmin)
 admin.site.register(Teacher, TeacherAdmin)
 admin.site.register(Student, StudentAdmin)
 admin.site.register(RTE, RTEAdmin)
+admin.site.register(Course, CourseAdmin)

@@ -27,8 +27,9 @@ urlpatterns = [
     path("admin_home/", admin_home, name="admin_home"),
     path("register/", register, name="register"),
     path("logout/", logout_page, name="logout"),
-    path("delete-user/<id>", deleteuser, name="delete-user"),
+    path("delete_user/<id>", deleteuser, name="delete_user"),
     path("register_course/", register_course, name="register_course"),
+    path("delete_course/<id>", deletecourse, name="delete_course"),
 ]
 
 

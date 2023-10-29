@@ -15,7 +15,7 @@
 
     {% endif %}
     <div class="row">
-      <div class="col-md-6 mb-3">
+      <div class="col mb-3">
         <label for="InputCourse" class="form-label">Course</label>
         <input
           type="text"
@@ -24,6 +24,47 @@
           name="course"
           value="{{ data.firstname }}"
         />
+         <div class="col mb-3">
+        <label for="fieldofstudy" class="form-label">Field of Study</label>
+        <select
+          name="fieldofstudy"
+          id="fieldofstudy"
+          class="form-select bg-dark text-white mb-3"
+          aria-label="Student"
+          style="width: 30%"
+        >
+          <option selected value="Computing">Computing</option>
+          <option value="Multimedia">Multimedia</option>
+          <option value="Networking">Networking</option>
+        </select>
+      </div>
+       <div class="col mb-3">
+        <label for="year" class="form-label">Year</label>
+        <select
+          name="year"
+          id="year"
+          class="form-select bg-dark text-white mb-3"
+          aria-label="Student"
+          style="width: 30%"
+        >
+          <option selected value="First">First</option>
+          <option value="Second">Second</option>
+          <option value="Third">Third</option>
+        </select>
+      </div>
+       <div class="col mb-3">
+        <label for="semester" class="form-label">Semester</label>
+        <select
+          name="semester"
+          id="semester"
+          class="form-select bg-dark text-white mb-3"
+          aria-label="Student"
+          style="width: 30%"
+        >
+          <option selected value="First">First</option>
+          <option value="Second">Second</option>
+        </select>
+      </div>
       </div>
       
     <button type="submit" class="btn btn-primary">Register</button>
@@ -42,7 +83,7 @@
       <th scope="row">{{forloop.counter}}</th>
       <td>{{course.name}}</td>
       <td>
-        <a href="/delete-user/{{user.id}}" class="btn btn-danger m-2">Delete</button>
+        <a href="/delete_course/{{course.id}}" class="btn btn-danger m-2">Delete</button>
           <a href="#" class="btn btn-success m-2">Update</button>
       </td>
     </tr>

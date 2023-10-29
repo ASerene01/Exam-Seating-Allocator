@@ -6,6 +6,21 @@ USER_TYPES = (
     ("teacher", "Teacher"),
     ("student", "Student"),
 )
+FIELDOFSTUDY = (
+    ("computing", "Computing"),
+    ("networking", "Networking"),
+    ("multimedia", "Multimedia"),
+)
+YEAR = (
+    ("first", "First"),
+    ("second", "Second"),
+    ("third", "Third"),
+)
+
+SEMESTER = (
+    ("first", "First"),
+    ("econd", "Second"),
+)
 
 
 class User(AbstractUser):
@@ -24,16 +39,22 @@ class RTE(models.Model):
 
 class Course(models.Model):
     name = models.CharField(max_length=100)
-
-
-class Section(models.Model):
-    section_name = models.CharField(max_length=50)
-    courses = models.ManyToManyField(Course, related_name="courses_section")
+    fieldofstudy = models.CharField(
+        max_length=20, choices=FIELDOFSTUDY, default="computing"
+    )
+    year = models.CharField(max_length=20, choices=YEAR, default="first")
+    semester = models.CharField(max_length=20, choices=SEMESTER, default="first")
 
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    sections = models.ManyToManyField(Section, related_name="students")
+    fieldofstudy = models.CharField(
+        max_length=20, choices=FIELDOFSTUDY, default="computing"
+    )
+    year = models.CharField(max_length=20, choices=YEAR, default="first")
+    semester = models.CharField(max_length=20, choices=SEMESTER, default="first")
+    courses = models.ManyToManyField(Course, related_name="students")
+    section = models.CharField(max_length=20, blank=True)
 
 
 class Teacher(models.Model):
