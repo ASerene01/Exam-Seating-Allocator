@@ -53,6 +53,11 @@ def register(request):
         user_type = (data.get("user_type")).lower()
         password = data.get("password")
         user_image = request.FILES.get("user_image")
+
+        fieldofstudy = (data.get("fieldofstudy")).lower()
+        year = (data.get("year")).lower()
+        semester = (data.get("semester")).lower()
+        selected_courses = data.getlist("selected_courses")
         if user_image is None:
             user_image = "Users/default.jpg"
         user = User.objects.filter(username=username)
@@ -87,8 +92,16 @@ def register(request):
 
         elif user_type == "student":
             # Create a Teacher instance and associate it with the user
-            student = Student.objects.create(user=user)
-
+            student = Student.objects.create(
+                user=user,
+                fieldofstudy=fieldofstudy,
+                year=year,
+                semester=semester,
+                section="",
+            )
+            for selected_course in selected_courses:
+                course = Course.objects.get(name=selected_course)
+                student.courses.add(course)
             # Add the user to a group if needed (e.g., "Teachers" group)
             student_group, created = Group.objects.get_or_create(name="Students")
             user.groups.add(student_group)

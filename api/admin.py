@@ -13,7 +13,19 @@ class CourseAdmin(admin.ModelAdmin):
 
 
 class StudentAdmin(admin.ModelAdmin):
-    list_display = ["user", "fieldofstudy", "year", "semester", "section"]
+    list_display = [
+        "user",
+        "fieldofstudy",
+        "year",
+        "semester",
+        "section",
+        "display_courses",
+    ]
+
+    def display_courses(self, obj):
+        return ", ".join([course.name for course in obj.courses.all()])
+
+    display_courses.short_description = "Courses"
     fields = ("user", "fieldofstudy", "year", "semester", "section")
 
 

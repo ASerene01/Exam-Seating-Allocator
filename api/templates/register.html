@@ -52,7 +52,7 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-md-7 mb-3">
+      <div class="col-">
         <label for="userType" class="form-label">User Type</label>
         <select
           name="user_type"
@@ -66,17 +66,73 @@
           <option value="Teacher">Teacher</option>
         </select>
       </div>
-      <div class="col-md-3 mb-3 student-options">
-        <label for="studentYear" class="form-label">Section</label>
+      <div class="col- student-options">
+        <div class="col-">
+          <label for="fieldofstudy" class="form-label">Field of Study</label>
+          <select
+            name="fieldofstudy"
+            id="fieldofstudy"
+            class="form-select bg-dark text-white mb-3"
+            aria-label="Student"
+            style="width: 30%"
+          >
+            <option selected value="Computing">Computing</option>
+            <option value="Multimedia">Multimedia</option>
+            <option value="Networking">Networking</option>
+          </select>
+        </div>
+        <div class="col-">
+          <label for="year" class="form-label">Year</label>
+          <select
+            name="year"
+            id="year"
+            class="form-select bg-dark text-white mb-3"
+            aria-label="Student"
+            style="width: 30%"
+          >
+            <option selected value="First">First</option>
+            <option value="Second">Second</option>
+            <option value="Third">Third</option>
+          </select>
+        </div>
+        <div class="col">
+          <label for="semester" class="form-label">Semester</label>
+          <select
+            name="semester"
+            id="semester"
+            class="form-select bg-dark text-white mb-3"
+            aria-label="Student"
+            style="width: 30%"
+          >
+            <option selected value="First">First</option>
+            <option value="Second">Second</option>
+          </select>
+        </div>
+        <label for="studentYear" class="form-label">Courses</label>
+        <div class="checkbox-group">
+          {% for course in Courses %}
+
+          <input
+            type="checkbox"
+            name="selected_courses"
+            value="{{ course.name }}"
+          />
+          {{ course.name }} <br />
+          {% endfor %}
+        </div>
+        {% comment %} <label for="studentYear" class="form-label">Course</label>
         <select
           name="student_course"
           class="form-select bg-dark text-white"
           aria-label="Student Course"
+          size="5"
+          multiple
         >
           {%for course in Courses%}
           <option value="{{course.name}}">{{course.name}}</option>
           {%endfor%}
         </select>
+        {% endcomment %}
       </div>
     </div>
     <div class="mb-3">
