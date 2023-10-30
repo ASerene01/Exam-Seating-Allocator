@@ -85,6 +85,23 @@ def register(request):
         )
         user.set_password(password)
         user.save()
+        students = Student.objects.filter(
+            fieldofstudy=fieldofstudy, year=year, semester=semester
+        )
+        print(students)
+        last_section = students.values("section").distinct()
+        print("Hello", last_section)
+        if last_section.exists():
+            lastsection = last_section.last()["section"]
+            print("Last Section", lastsection)
+            lastsectionstudents = Student.objects.filter(section=lastsection)
+            numberofstudents = lastsectionstudents.count()
+            print("Number of students in this section", numberofstudents)
+        else:
+            # Handle the case where there are no distinct sections
+            lastsection = 1
+            numberofstudents = 0
+            print("None", last_section)
 
         if user_type == "admin":
             # Create a Teacher instance and associate it with the user
@@ -101,7 +118,7 @@ def register(request):
                 fieldofstudy=fieldofstudy,
                 year=year,
                 semester=semester,
-                section="",
+                section=get_section(numberofstudents, lastsection),
             )
             for selected_course in selected_courses:
                 course = Course.objects.get(name=selected_course)
@@ -183,10 +200,40 @@ def deletecourse(request, id):
 
 
 def student_home(request):
-    context = {"homeurl": "student_home"}
+    user = request.user
+    student = Student.objects.get(user=user)
+    username = user.username
+    first_name = user.first_name
+    last_name = user.last_name
+    email = user.email
+    user_image = user.user_image
+    fieldofstudy = student.fieldofstudy
+    year = student.year
+    semester = student.semester
+
+    context = {
+        "homeurl": "student_home",
+        "fieldofstudy": fieldofstudy,
+        "year": year,
+        "semester": semester,
+        "username": username,
+        "first_name": first_name,
+        "last_name": last_name,
+        "email": email,
+        "user_image": user_image,
+    }
     return render(request, "studentHome.html", context)
 
 
 def teacher_home(request):
     context = {"homeurl": "student_home"}
     return render(request, "teacherHome.html", context)
+
+
+def get_section(numberofstudents, lastsection):
+    if numberofstudents <= 20:
+        section = lastsection
+    else:
+        section = int(lastsection) + 1
+        section = str(section)
+    return section

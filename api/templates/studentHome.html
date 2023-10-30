@@ -1,1 +1,43 @@
-{%extends "base.html"%} {%block start%} Hello Student{%endblock%}
+{%extends "base.html"%} {%block start%}
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-4">
+      <div class="card">
+        <img
+          src="/media/{{user.user_image}}"
+          class="card-img-top"
+          alt="Profile Image"
+        />
+        <div class="card-body">
+          <h5 class="card-title">{{ username }}</h5>
+          <p class="card-text">{{ first_name }} {{ last_name }}</p>
+          <p class="card-text">{{ email }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-8">
+      <h2>Profile Information</h2>
+      <table class="table table-bordered">
+        <tbody>
+          <tr>
+            <th>Field of Study:</th>
+            <td>{{ fieldofstudy|title }}</td>
+          </tr>
+          <tr>
+            <th>Year:</th>
+            <td>{{ year|title }}</td>
+          </tr>
+          <tr>
+            <th>Semester:</th>
+            <td>{{ semester|title }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+{%endblock%}
