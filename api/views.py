@@ -29,6 +29,10 @@ def login_page(request):
             messages.error(request, "Success")
             if user.user_type == "admin":
                 return redirect("admin_home/")
+            elif user.user_type == "student":
+                return redirect("student_home/")
+            elif user.user_type == "teacher":
+                return redirect("teacher_home/")
         else:
             messages.error(request, "Invalid password")
 
@@ -38,7 +42,7 @@ def login_page(request):
 @login_required(login_url="login_page")
 def admin_home(request):
     queryset = User.objects.all()
-    context = {"AllUsers": queryset}
+    context = {"AllUsers": queryset, "homeurl": "admin_home"}
     return render(request, "adminHome.html", context)
 
 
@@ -176,3 +180,13 @@ def deletecourse(request, id):
     queryset = Course.objects.get(id=id)
     queryset.delete()
     return redirect("register_course")
+
+
+def student_home(request):
+    context = {"homeurl": "student_home"}
+    return render(request, "studentHome.html", context)
+
+
+def teacher_home(request):
+    context = {"homeurl": "student_home"}
+    return render(request, "teacherHome.html", context)
