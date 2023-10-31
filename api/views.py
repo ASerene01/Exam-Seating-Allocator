@@ -136,7 +136,11 @@ def register(request):
         messages.info(request, "Successfully registered")
         return redirect("/register/")
     querysetcourse = Course.objects.all()
-    context = {"style": "register", "Courses": querysetcourse}
+    context = {
+        "style": "register",
+        "Courses": querysetcourse,
+        "homeurl": "admin_home",
+    }
     return render(request, "register.html", context)
 
 
@@ -149,9 +153,11 @@ def logout_page(request):
 def deleteuser(request, id):
     queryset = User.objects.get(id=id)
     image_path = queryset.user_image.url
-    to_not_delete = "C:\\Users\\amitb\\OneDrive\\Desktop\\FYP Project\\static\\myapp\\Pictures\\Users\\default.jpg"
+
     new_image = image_path.replace("/media/", "/")
     media_root = settings.MEDIA_ROOT
+    to_not_delete = media_root + "\\Users\\default.jpg"
+    to_not_delete = to_not_delete.replace("/", "\\")
     to_delete_path = media_root + new_image
     to_delete_path = to_delete_path.replace("/", "\\")
     for root, dirs, files in os.walk(media_root):
