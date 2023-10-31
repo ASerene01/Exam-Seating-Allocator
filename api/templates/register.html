@@ -120,19 +120,6 @@
           {{ course.name }} <br />
           {% endfor %}
         </div>
-        {% comment %} <label for="studentYear" class="form-label">Course</label>
-        <select
-          name="student_course"
-          class="form-select bg-dark text-white"
-          aria-label="Student Course"
-          size="5"
-          multiple
-        >
-          {%for course in Courses%}
-          <option value="{{course.name}}">{{course.name}}</option>
-          {%endfor%}
-        </select>
-        {% endcomment %}
       </div>
     </div>
     <div class="mb-3">

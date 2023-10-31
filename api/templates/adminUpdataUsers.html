@@ -1,0 +1,206 @@
+{%extends "base.html"%} {%block start%}
+<div class="container mt-5">
+  <form
+    class="col-6 mx-auto card p-3 shadow-lg"
+    method="post"
+    enctype="multipart/form-data"
+  >
+    {% csrf_token %}
+    <h2>Register</h2>
+    <hr />
+    {% if messages %}
+    <div class="alert alert-primary" role="alert">
+      {% for message in messages %} {{message}} {% endfor %}
+    </div>
+
+    {% endif %}
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label for="InputFirstName" class="form-label">First Name</label>
+        <input
+          type="text"
+          class="form-control"
+          id="InputFirstName"
+          name="firstname"
+          value="{{ userdetails.first_name }}"
+        />
+      </div>
+      <div class="col-md-6 mb-3">
+        <label for="InputLastName" class="form-label">Last Name</label>
+        <input
+          type="text"
+          class="form-control"
+          id="InputLastName"
+          name="lastname"
+          value="{{ userdetails.last_name }}"
+        />
+      </div>
+    </div>
+    <div class="mb-3">
+      <label for="InputUsername" class="form-label">Username</label>
+      <input
+        type="text"
+        class="form-control"
+        id="InputUsername"
+        name="username"
+        value="{{ userdetails.username }}"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="InputEmail" class="form-label">Email</label>
+      <input
+        type="email"
+        class="form-control"
+        id="InputEmail"
+        name="email"
+        value="{{ userdetails.email }}"
+      />
+      <div id="emailHelp" class="form-text">
+        We'll never share your email or username with anyone else.
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-" style="display: block">
+        <label for="userType" class="form-label">User Type</label>
+        <select
+          name="user_type"
+          id="userType"
+          class="form-select bg-dark text-white mb-3"
+          aria-label="Student"
+          style="width: 30%"
+        >
+          <option selected value="{{userdetails.user_type}}">
+            {{userdetails.user_type| capfirst}}
+          </option>
+          {%if userdetails.user_type == 'student'%}
+          <option value="Admin">Admin</option>
+          <option value="Teacher">Teacher</option>
+          {%elif userdetails.user_type == 'admin'%}
+          <option value="Student">Student</option>
+          <option value="Teacher">Teacher</option>
+          {%else%}
+          <option value="Student">Student</option>
+          <option value="Admin">Admin</option>
+          {% endif %}
+        </select>
+      </div>
+      {%if studentdetails is not None%}
+      <div class="col- student-options">
+        <div class="col-">
+          <label for="fieldofstudy" class="form-label">Field of Study</label>
+          <select
+            name="fieldofstudy"
+            id="fieldofstudy"
+            class="form-select bg-dark text-white mb-3"
+            aria-label="Student"
+            style="width: 30%"
+          >
+            <option selected value="{{studentdetails.fieldofstudy}}">
+              {{studentdetails.fieldofstudy| capfirst}}
+            </option>
+            {%if studentdetails.fieldofstudy == 'computing'%}
+            <option value="Multimedia">Multimedia</option>
+            <option value="Networking">Networking</option>
+            {%elif studentdetails.fieldofstudy == 'multimedia'%}
+            <option value="Computing">Computing</option>
+            <option value="Networking">Networking</option>
+            {%else%}
+            <option value="Computing">Computing</option>
+            <option value="Multimedia">Multimedia</option>
+            {% endif %}
+          </select>
+        </div>
+        <div class="col-">
+          <label for="year" class="form-label">Year</label>
+          <select
+            name="year"
+            id="year"
+            class="form-select bg-dark text-white mb-3"
+            aria-label="Student"
+            style="width: 30%"
+          >
+            <option selected value="{{studentdetails.year}}">
+              {{studentdetails.year| capfirst}}
+            </option>
+            {%if studentdetails.year == 'first'%}
+            <option value="Second"></option>
+            <option value="Third">Third</option>
+            {%elif studentdetails.year == 'second'%}
+            <option value="First">First</option>
+            <option value="Third">Third</option>
+            {%else%}
+            <option value="First">First</option>
+            <option value="Second ">Second</option>
+            {% endif %}
+          </select>
+        </div>
+        <div class="col">
+          <label for="semester" class="form-label">Semester</label>
+          <select
+            name="semester"
+            id="semester"
+            class="form-select bg-dark text-white mb-3"
+            aria-label="Student"
+            style="width: 30%"
+          >
+            <option selected value="{{studentdetails.semester}}">
+              {{studentdetails.semester| capfirst}}
+            </option>
+            {%if studentdetails.semester == 'first'%}
+            <option value="Second">Second</option>
+            {%else%}
+            <option value="First">First</option>
+            {% endif %}
+          </select>
+        </div>
+        <div class="col">
+          <label for="section" class="form-label">Section</label>
+          <select
+            name="section"
+            id="section"
+            class="form-select bg-dark text-white mb-3"
+            aria-label="Student"
+            style="width: 30%"
+          >
+            <option selected value="{{studentdetails.section}}">
+              {{studentdetails.section| capfirst}}
+            </option>
+          </select>
+        </div>
+        <label for="studentCourses" class="form-label">Courses</label>
+        <div class="checkbox-group">
+          <!-- prettier-ignore -->
+          {% for eachcourse in allCourses %} <input type="checkbox"
+          name="selected_courses" value="{{ eachcourse.name }}" 
+          {%if studentcourses is not None%} 
+          {%for course in studentcourses %} 
+          {%if eachcourse.name == course.name%} 
+          checked 
+          {%endif%} 
+          {%endfor%} 
+          {%endif%}/> {{ eachcourse.name }} <br />
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    <div class="mb-3">
+      <label for="exampleInputPassword1" class="form-label">Password</label>
+      <input
+        type="password"
+        name="password"
+        class="form-control"
+        id="exampleInputPassword1"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="exampleInputPassword1" class="form-label">
+        Upload your profile picture
+      </label>
+      <input name="user_image" type="file" class="form-control" />
+    </div>
+    <button type="submit" class="btn btn-primary">Register</button>
+  </form>
+</div>
+
+{%endblock%}

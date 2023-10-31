@@ -97,9 +97,7 @@ def register(request):
         students = Student.objects.filter(
             fieldofstudy=fieldofstudy, year=year, semester=semester
         )
-        print(students)
         last_section = students.values("section").distinct()
-        print("Hello", last_section)
         if last_section.exists():
             lastsection = last_section.last()["section"]
             print("Last Section", lastsection)
@@ -156,6 +154,75 @@ def register(request):
 def logout_page(request):
     logout(request)
     return redirect("login_page")
+
+
+@login_required(login_url="login_page")
+def update_user(request, id):
+    userdetails = User.objects.get(id=id)
+    allCourses = Course.objects.all()
+    if userdetails.user_type == "student":
+        studentdetails = Student.objects.get(user=userdetails)
+        courses = studentdetails.courses.all()
+        students = Student.objects.filter(
+            fieldofstudy=studentdetails.fieldofstudy,
+            year=studentdetails.year,
+            semester=studentdetails.semester,
+        )
+        sections = students.values("section").distinct()
+    else:
+        studentdetails = None
+        courses = None
+        sections = None
+
+    if request.method == "POST":
+        data = request.POST
+        first_name = data.get("firstname")
+        last_name = data.get("lastname")
+        username = data.get("username")
+        email = data.get("email")
+        user_type = (data.get("user_type")).lower()
+        password = data.get("password")
+        user_image = request.FILES.get("user_image")
+
+        userdetails.first_name = first_name
+        userdetails.last_name = last_name
+        exclude_username = User.objects.exclude(username=userdetails.username)
+        username_check = exclude_username.filter(username=username)
+        if username_check.exists():
+            messages.info(request, "Username already registered")
+            return redirect("/register/")
+        userdetails.username = username
+        exclude_email = User.objects.exclude(email=userdetails.email)
+        email_check = exclude_email.filter(email=email)
+        if email_check.exists():
+            messages.info(request, "Email already registered")
+            return redirect("/register/")
+        userdetails.email = email
+        userdetails.user_type = user_type
+        if user_image is not None:
+            userdetails.user_image = user_image
+        userdetails.save()
+        if password is not None:
+            userdetails.set_password(password)
+        if user_type == "student":
+            fieldofstudy = (data.get("fieldofstudy")).lower()
+            year = (data.get("year")).lower()
+            semester = (data.get("semester")).lower()
+            selected_courses = data.getlist("selected_courses")
+            studentdetails.fieldofstudy = fieldofstudy
+            studentdetails.year = year
+            studentdetails.semester = semester
+        return redirect("admin_home")
+    context = {
+        "homeurl": "admin_home",
+        "userdetails": userdetails,
+        "studentdetails": studentdetails,
+        "studentcourses": courses,
+        "allCourses": allCourses,
+        "sections": sections,
+        "style": "updateuser",
+    }
+    return render(request, "adminUpdataUsers.html", context)
 
 
 @login_required(login_url="login_page")
