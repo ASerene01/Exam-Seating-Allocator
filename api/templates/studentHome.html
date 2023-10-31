@@ -9,9 +9,9 @@
           alt="Profile Image"
         />
         <div class="card-body">
-          <h5 class="card-title">{{ username }}</h5>
-          <p class="card-text">{{ first_name }} {{ last_name }}</p>
-          <p class="card-text">{{ email }}</p>
+          <h5 class="card-title">{{ user.username }}</h5>
+          <p class="card-text">{{ user.first_name }} {{ user.last_name }}</p>
+          <p class="card-text">{{ user.email }}</p>
         </div>
       </div>
     </div>
@@ -31,6 +31,25 @@
             <th>Semester:</th>
             <td>{{ semester|title }}</td>
           </tr>
+        </tbody>
+      </table>
+      <table
+        class="table table-dark table-bordered mt-5"
+        style="border-width: 4px; border-color: grey"
+      >
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Course Name</th>
+          </tr>
+        </thead>
+        <tbody>
+          {%for course in courses%}
+          <tr>
+            <th scope="row">{{forloop.counter}}</th>
+            <td>{{course.name}}</td>
+          </tr>
+          {%endfor%}
         </tbody>
       </table>
     </div>

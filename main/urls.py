@@ -25,6 +25,7 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", login_page, name="login_page"),
     path("admin_home/", admin_home, name="admin_home"),
+    path("admin_view_profile/", admin_view_profile, name="admin_view_profile"),
     path("register/", register, name="register"),
     path("logout/", logout_page, name="logout"),
     path("delete_user/<id>", deleteuser, name="delete_user"),

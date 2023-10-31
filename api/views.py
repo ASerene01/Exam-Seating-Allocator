@@ -41,9 +41,18 @@ def login_page(request):
 
 @login_required(login_url="login_page")
 def admin_home(request):
-    queryset = User.objects.all()
+    current_user = request.user
+    queryset = User.objects.exclude(id=current_user.id)
     context = {"AllUsers": queryset, "homeurl": "admin_home"}
     return render(request, "adminHome.html", context)
+
+
+@login_required(login_url="login_page")
+def admin_view_profile(request):
+    context = {
+        "homeurl": "admin_home",
+    }
+    return render(request, "adminViewProfile.html", context)
 
 
 @login_required(login_url="login_page")
@@ -208,25 +217,16 @@ def deletecourse(request, id):
 def student_home(request):
     user = request.user
     student = Student.objects.get(user=user)
-    username = user.username
-    first_name = user.first_name
-    last_name = user.last_name
-    email = user.email
-    user_image = user.user_image
     fieldofstudy = student.fieldofstudy
     year = student.year
     semester = student.semester
-
+    courses = student.courses.all()
     context = {
         "homeurl": "student_home",
         "fieldofstudy": fieldofstudy,
         "year": year,
         "semester": semester,
-        "username": username,
-        "first_name": first_name,
-        "last_name": last_name,
-        "email": email,
-        "user_image": user_image,
+        "courses": courses,
     }
     return render(request, "studentHome.html", context)
 
