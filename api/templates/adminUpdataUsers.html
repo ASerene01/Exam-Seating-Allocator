@@ -6,7 +6,7 @@
     enctype="multipart/form-data"
   >
     {% csrf_token %}
-    <h2>Register</h2>
+    <h2>Update</h2>
     <hr />
     {% if messages %}
     <div class="alert alert-primary" role="alert">
@@ -123,7 +123,7 @@
               {{studentdetails.year| capfirst}}
             </option>
             {%if studentdetails.year == 'first'%}
-            <option value="Second"></option>
+            <option value="Second">Second</option>
             <option value="Third">Third</option>
             {%elif studentdetails.year == 'second'%}
             <option value="First">First</option>
@@ -153,8 +153,9 @@
             {% endif %}
           </select>
         </div>
-        <div class="col">
+        <div class="col section-options">
           <label for="section" class="form-label">Section</label>
+          <!-- prettier-ignore -->
           <select
             name="section"
             id="section"
@@ -165,20 +166,16 @@
             <option selected value="{{studentdetails.section}}">
               {{studentdetails.section| capfirst}}
             </option>
+            {%for section in sections%}
+            <option value="{{section.section}}">{{section.section}}</option>
+            {%endfor%}
           </select>
         </div>
         <label for="studentCourses" class="form-label">Courses</label>
         <div class="checkbox-group">
           <!-- prettier-ignore -->
-          {% for eachcourse in allCourses %} <input type="checkbox"
-          name="selected_courses" value="{{ eachcourse.name }}" 
-          {%if studentcourses is not None%} 
-          {%for course in studentcourses %} 
-          {%if eachcourse.name == course.name%} 
-          checked 
-          {%endif%} 
-          {%endfor%} 
-          {%endif%}/> {{ eachcourse.name }} <br />
+          {% for eachcourse in studentcourses %} 
+          {{ eachcourse.name }} <br />
           {% endfor %}
         </div>
       </div>
@@ -199,7 +196,7 @@
       </label>
       <input name="user_image" type="file" class="form-control" />
     </div>
-    <button type="submit" class="btn btn-primary">Register</button>
+    <button type="submit" class="btn btn-primary">Update</button>
   </form>
 </div>
 

@@ -70,7 +70,10 @@ def register(request):
         fieldofstudy = (data.get("fieldofstudy")).lower()
         year = (data.get("year")).lower()
         semester = (data.get("semester")).lower()
-        selected_courses = data.getlist("selected_courses")
+        courses = Course.objects.filter(
+            fieldofstudy=fieldofstudy, year=year, semester=semester
+        )
+
         if user_image is None:
             user_image = "Users/default.jpg"
         user = User.objects.filter(username=username)
@@ -97,18 +100,15 @@ def register(request):
         students = Student.objects.filter(
             fieldofstudy=fieldofstudy, year=year, semester=semester
         )
-        last_section = students.values("section").distinct()
-        if last_section.exists():
-            lastsection = last_section.last()["section"]
-            print("Last Section", lastsection)
+        allsections = students.values("section").distinct()
+        if allsections.exists():
+            lastsection = allsections.last()["section"]
             lastsectionstudents = Student.objects.filter(section=lastsection)
             numberofstudents = lastsectionstudents.count()
-            print("Number of students in this section", numberofstudents)
         else:
             # Handle the case where there are no distinct sections
             lastsection = 1
             numberofstudents = 0
-            print("None", last_section)
 
         if user_type == "admin":
             # Create a Teacher instance and associate it with the user
@@ -127,8 +127,7 @@ def register(request):
                 semester=semester,
                 section=get_section(numberofstudents, lastsection),
             )
-            for selected_course in selected_courses:
-                course = Course.objects.get(name=selected_course)
+            for course in courses:
                 student.courses.add(course)
             # Add the user to a group if needed (e.g., "Teachers" group)
             student_group, created = Group.objects.get_or_create(name="Students")
@@ -145,6 +144,7 @@ def register(request):
     querysetcourse = Course.objects.all()
     context = {
         "style": "register",
+        "jslink": "register",
         "Courses": querysetcourse,
         "homeurl": "admin_home",
     }
@@ -169,6 +169,7 @@ def update_user(request, id):
             semester=studentdetails.semester,
         )
         sections = students.values("section").distinct()
+        sections = sections.exclude(section=studentdetails.section)
     else:
         studentdetails = None
         courses = None
@@ -208,10 +209,40 @@ def update_user(request, id):
             fieldofstudy = (data.get("fieldofstudy")).lower()
             year = (data.get("year")).lower()
             semester = (data.get("semester")).lower()
-            selected_courses = data.getlist("selected_courses")
+            section = data.get("section")
+            if (
+                studentdetails.fieldofstudy is not fieldofstudy
+                or studentdetails.year is not year
+                or studentdetails.semester is not semester
+            ):
+                studentdetails.courses.clear()
+                courses = Course.objects.filter(
+                    fieldofstudy=fieldofstudy, year=year, semester=semester
+                )
+                for course in courses:
+                    studentdetails.courses.add(course)
+
+                studentsfilter = Student.objects.filter(
+                    fieldofstudy=fieldofstudy, year=year, semester=semester
+                )
+                allsections = studentsfilter.values("section").distinct()
+                if allsections.exists():
+                    lastsection = allsections.last()["section"]
+                    lastsectionstudents = Student.objects.filter(section=lastsection)
+                    numberofstudents = lastsectionstudents.count()
+                else:
+                    # Handle the case where there are no distinct sections
+                    lastsection = 1
+                    numberofstudents = 0
+                studentdetails.section = get_section(numberofstudents, lastsection)
+            else:
+                studentdetails.section = section
+
             studentdetails.fieldofstudy = fieldofstudy
             studentdetails.year = year
             studentdetails.semester = semester
+
+            studentdetails.save()
         return redirect("admin_home")
     context = {
         "homeurl": "admin_home",
@@ -221,6 +252,7 @@ def update_user(request, id):
         "allCourses": allCourses,
         "sections": sections,
         "style": "updateuser",
+        "jslink": "updateuser",
     }
     return render(request, "adminUpdataUsers.html", context)
 
@@ -266,11 +298,17 @@ def register_course(request):
             name=course, fieldofstudy=fieldofstudy, year=year, semester=semester
         )
         courseobject.save()
+        students = Student.objects.filter(
+            fieldofstudy=fieldofstudy, year=year, semester=semester
+        )
+        for student in students:
+            student.courses.add(courseobject)
+            # if student.courses is not courseobject:
 
         messages.info(request, "Course successfully registered")
         return redirect("/admin_home/")
     queryset = Course.objects.all()
-    context = {"Courses": queryset}
+    context = {"homeurl": "admin_home", "Courses": queryset}
     return render(request, "register_course.html", context)
 
 

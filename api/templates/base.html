@@ -43,8 +43,8 @@
         </form>
       </div>
     </nav>
-    {% block start %} {% endblock %} {% if style %}
-    <script src="{% static 'myapp/Javascript/'|add:style %}.js"></script>
+    {% block start %} {% endblock %} {% if jslink %}
+    <script src="{% static 'myapp/Javascript/'|add:jslink %}.js"></script>
     {% endif %}
   </body>
 </html>

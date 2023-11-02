@@ -74,6 +74,9 @@
     <tr>
       <th scope="col">#</th>
       <th scope="col">Course Name</th>
+      <th scope="col">Field of Study</th>
+      <th scope="col">Year</th>
+      <th scope="col">Semester</th>
       <th scope="col">Action</th>
     </tr>
   </thead>
@@ -81,7 +84,11 @@
     {%for course in Courses%}
     <tr>
       <th scope="row">{{forloop.counter}}</th>
-      <td>{{course.name}}</td>
+      <td>{{course.name| capfirst}}</td>
+      <td>{{course.fieldofstudy| capfirst}}</td>
+      <td>{{course.year| capfirst}}</td>
+      <td>{{course.semester| capfirst}}</td>
+      
       <td>
         <a href="/delete_course/{{course.id}}" class="btn btn-danger m-2">Delete</button>
           <a href="#" class="btn btn-success m-2">Update</button>

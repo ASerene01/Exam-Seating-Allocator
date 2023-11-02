@@ -108,18 +108,6 @@
             <option value="Second">Second</option>
           </select>
         </div>
-        <label for="studentYear" class="form-label">Courses</label>
-        <div class="checkbox-group">
-          {% for course in Courses %}
-
-          <input
-            type="checkbox"
-            name="selected_courses"
-            value="{{ course.name }}"
-          />
-          {{ course.name }} <br />
-          {% endfor %}
-        </div>
       </div>
     </div>
     <div class="mb-3">
