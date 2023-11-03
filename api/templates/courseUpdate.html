@@ -1,0 +1,111 @@
+{%extends "base.html"%} {%block start%}
+<div class="container mt-5">
+  <form
+    class="col-6 mx-auto card p-3 shadow-lg"
+    method="post"
+    enctype="multipart/form-data"
+  >
+    {% csrf_token %}
+    <h2>Update Course</h2>
+    <hr />
+    {% if messages %}
+    <div class="alert alert-primary" role="alert">
+      {% for message in messages %} {{message}} {% endfor %}
+    </div>
+
+    {% endif %}
+    <div class="row">
+      <div class="col mb-3">
+        <label for="InputCourse" class="form-label">Course</label>
+        <input
+          type="text"
+          class="form-control"
+          id="InputCourse"
+          name="course"
+          value="{{coursedetails.name}}"
+        />
+      </div>
+      {%if coursedetails is not None%}
+      <div class="col- student-options">
+        <div class="col-">
+          <label for="fieldofstudy" class="form-label">Field of Study</label>
+          <select
+            name="fieldofstudy"
+            id="fieldofstudy"
+            class="form-select bg-dark text-white mb-3"
+            aria-label="Student"
+            style="width: 30%"
+          >
+            <option selected value="{{coursedetails.fieldofstudy}}">
+              {{coursedetails.fieldofstudy| capfirst}}
+            </option>
+            {%if coursedetails.fieldofstudy == 'computing'%}
+            <option value="multimedia">Multimedia</option>
+            <option value="networking">Networking</option>
+            {%elif coursedetails.fieldofstudy == 'multimedia'%}
+            <option value="computing">Computing</option>
+            <option value="networking">Networking</option>
+            {%else%}
+            <option value="computing">Computing</option>
+            <option value="multimedia">Multimedia</option>
+            {% endif %}
+          </select>
+        </div>
+        <div class="col-">
+          <label for="year" class="form-label">Year</label>
+          <select
+            name="year"
+            id="year"
+            class="form-select bg-dark text-white mb-3"
+            aria-label="Student"
+            style="width: 30%"
+          >
+            <option selected value="{{coursedetails.year}}">
+              {{coursedetails.year| capfirst}}
+            </option>
+
+            {%if coursedetails.year == 'first'%}
+            <option value="second">Second</option>
+            <option value="third">Third</option>
+            {%elif coursedetails.year == 'second'%}
+            <option value="first">First</option>
+            <option value="third">Third</option>
+            {%else%}
+            <option value="first">First</option>
+            <option value="second ">Second</option>
+            {% endif %}
+          </select>
+        </div>
+        <div class="col">
+          <label for="semester" class="form-label">Semester</label>
+          <select
+            name="semester"
+            id="semester"
+            class="form-select bg-dark text-white mb-3"
+            aria-label="Student"
+            style="width: 30%"
+          >
+            <option selected value="{{coursedetails.semester}}">
+              {{coursedetails.semester| capfirst}}
+            </option>
+            {%if coursedetails.semester == 'first'%}
+            <option value="second">Second</option>
+            {%else%}
+            <option value="first">First</option>
+            {% endif %}
+          </select>
+        </div>
+        <label for="studentCourses" class="form-label">Courses</label>
+        <div class="checkbox-group">
+          <!-- prettier-ignore -->
+          {% for eachcourse in studentcourses %} 
+          {{ eachcourse.name }} <br />
+          {% endfor %}
+        </div>
+      </div>
+      {% endif %}
+    </div>
+    <button type="submit" class="btn btn-primary">Update</button>
+  </form>
+</div>
+{%endblock%}

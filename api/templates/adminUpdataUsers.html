@@ -99,14 +99,14 @@
               {{studentdetails.fieldofstudy| capfirst}}
             </option>
             {%if studentdetails.fieldofstudy == 'computing'%}
-            <option value="Multimedia">Multimedia</option>
-            <option value="Networking">Networking</option>
+            <option value="multimedia">Multimedia</option>
+            <option value="networking">Networking</option>
             {%elif studentdetails.fieldofstudy == 'multimedia'%}
-            <option value="Computing">Computing</option>
-            <option value="Networking">Networking</option>
+            <option value="computing">Computing</option>
+            <option value="networking">Networking</option>
             {%else%}
-            <option value="Computing">Computing</option>
-            <option value="Multimedia">Multimedia</option>
+            <option value="computing">Computing</option>
+            <option value="multimedia">Multimedia</option>
             {% endif %}
           </select>
         </div>
@@ -123,14 +123,14 @@
               {{studentdetails.year| capfirst}}
             </option>
             {%if studentdetails.year == 'first'%}
-            <option value="Second">Second</option>
-            <option value="Third">Third</option>
+            <option value="second">Second</option>
+            <option value="third">Third</option>
             {%elif studentdetails.year == 'second'%}
-            <option value="First">First</option>
-            <option value="Third">Third</option>
+            <option value="first">First</option>
+            <option value="third">Third</option>
             {%else%}
-            <option value="First">First</option>
-            <option value="Second ">Second</option>
+            <option value="first">First</option>
+            <option value="second ">Second</option>
             {% endif %}
           </select>
         </div>
@@ -147,9 +147,9 @@
               {{studentdetails.semester| capfirst}}
             </option>
             {%if studentdetails.semester == 'first'%}
-            <option value="Second">Second</option>
+            <option value="second">Second</option>
             {%else%}
-            <option value="First">First</option>
+            <option value="first">First</option>
             {% endif %}
           </select>
         </div>

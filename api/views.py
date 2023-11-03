@@ -309,7 +309,7 @@ def register_course(request):
         return redirect("/admin_home/")
     queryset = Course.objects.all()
     context = {"homeurl": "admin_home", "Courses": queryset}
-    return render(request, "register_course.html", context)
+    return render(request, "courseRegister.html", context)
 
 
 @login_required(login_url="login_page")
@@ -319,6 +319,62 @@ def deletecourse(request, id):
     return redirect("register_course")
 
 
+@login_required(login_url="login_page")
+def updatecourse(request, id):
+    coursedetails = Course.objects.get(id=id)
+    if request.method == "POST":
+        data = request.POST
+        name = data.get("course")
+        fieldofstudy = data.get("fieldofstudy")
+        year = data.get("year")
+        semester = data.get("semester")
+        coursedetails.name = name
+        if (
+            coursedetails.fieldofstudy is not fieldofstudy
+            or coursedetails.year is not year
+            or coursedetails.semester is not semester
+        ):
+            studentsfilter = Student.objects.filter(
+                fieldofstudy=coursedetails.fieldofstudy,
+                year=coursedetails.year,
+                semester=coursedetails.semester,
+            )
+            if studentsfilter.exists():
+                for student in studentsfilter:
+                    student.courses.clear()
+
+            coursedetails.fieldofstudy = fieldofstudy
+            coursedetails.year = year.lower()
+            coursedetails.semester = semester.lower()
+            coursedetails.save()
+            coursedetails = Course.objects.get(id=id)
+            print()
+            coursefilter = Course.objects.filter(
+                fieldofstudy=fieldofstudy,
+                year=year,
+                semester=semester,
+            )
+            print(fieldofstudy, year, semester)
+            studentnew = Student.objects.filter(
+                fieldofstudy=fieldofstudy,
+                year=year,
+                semester=semester,
+            )
+            if studentnew.exists():
+                for student in studentnew:
+                    for course in coursefilter:
+                        student.courses.add(course)
+        else:
+            coursedetails.save()
+        return redirect("/register_course/")
+    context = {
+        "homeurl": "admin_home",
+        "coursedetails": coursedetails,
+    }
+    return render(request, "courseUpdate.html", context)
+
+
+@login_required(login_url="login_page")
 def student_home(request):
     user = request.user
     student = Student.objects.get(user=user)
@@ -336,6 +392,7 @@ def student_home(request):
     return render(request, "studentHome.html", context)
 
 
+@login_required(login_url="login_page")
 def teacher_home(request):
     context = {"homeurl": "student_home"}
     return render(request, "teacherHome.html", context)
