@@ -35,8 +35,8 @@ def login_page(request):
                 return redirect("teacher_home/")
         else:
             messages.error(request, "Invalid password")
-
-    return render(request, "login.html")
+    context = {"homeurl": "login_page"}
+    return render(request, "login.html", context)
 
 
 @login_required(login_url="login_page")
