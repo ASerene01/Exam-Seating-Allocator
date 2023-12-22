@@ -61,12 +61,6 @@ class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
 
 
-""" 
-class Event(models.Model):
-    date = models.DateField()
-    courses = models.ManyToManyField(Course)
-
-
 class Hall(models.Model):
     name = models.CharField(max_length=100)
     rows = models.IntegerField()
@@ -77,10 +71,13 @@ class Seat(models.Model):
     hall = models.ForeignKey(Hall, on_delete=models.CASCADE)
     row = models.IntegerField()
     column = models.IntegerField()
-    is_available = models.BooleanField(default=True)
-    student = models.ForeignKey(
-        Student, on_delete=models.SET_NULL, null=True, blank=True
-    )
+
+
+""" 
+class Event(models.Model):
+    date = models.DateField()
+    courses = models.ManyToManyField(Course)
+
 
 
 class Allocation(models.Model):

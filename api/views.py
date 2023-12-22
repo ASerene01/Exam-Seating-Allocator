@@ -375,6 +375,33 @@ def updatecourse(request, id):
 
 
 @login_required(login_url="login_page")
+def registerhall(request):
+    if request.method == "POST":
+        data = request.POST
+        hall_name = data.get("hallname")
+        rows = data.get("rows")
+        columns = data.get("columns")
+        halls = Hall.objects.filter(name=hall_name)
+        if halls.exists():
+            messages.info(request, "Hall already registered")
+            return redirect("/register_hall/")
+        hall = Hall.objects.create(
+            name=hall_name,
+            rows=rows,
+            columns=columns,
+        )
+        hall.save()
+        messages.info(request, "Successfully registered")
+        return redirect("/register_hall/")
+    context = {
+        "style": "registerhall",
+        "jslink": "registerhall",
+        "homeurl": "admin_home",
+    }
+    return render(request, "registerHall.html", context)
+
+
+@login_required(login_url="login_page")
 def student_home(request):
     user = request.user
     student = Student.objects.get(user=user)
