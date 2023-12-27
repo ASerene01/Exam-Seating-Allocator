@@ -9,37 +9,59 @@ User = get_user_model()
 from django.shortcuts import render, redirect
 from .models import *
 from django.contrib.auth.decorators import login_required
-
+from django.contrib.auth.decorators import user_passes_test
 
 # Create your views here.
 User = get_user_model()
 
 
-def login_page(request):
-    if request.method == "POST":
-        username = request.POST.get("username")
-        password = request.POST.get("password")
+def is_admin(user):
+    return user.groups.filter(name="RTEs").exists()
 
-        if not User.objects.filter(username=username).exists():
-            messages.error(request, "Invalid Username")
-            return redirect("login_page")
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            messages.error(request, "Success")
-            if user.user_type == "admin":
-                return redirect("admin_home/")
-            elif user.user_type == "student":
-                return redirect("student_home/")
-            elif user.user_type == "teacher":
-                return redirect("teacher_home/")
-        else:
-            messages.error(request, "Invalid password")
+
+def is_student(user):
+    return user.groups.filter(name="Students").exists()
+
+
+def is_teacher(user):
+    return user.groups.filter(name="Teachers").exists()
+
+
+def login_page(request):
+    user = request.user
+    if user.is_authenticated:
+        if user.user_type == "admin":
+            return redirect("admin_home/")
+        elif user.user_type == "student":
+            return redirect("student_home/")
+        elif user.user_type == "teacher":
+            return redirect("teacher_home/")
+    else:
+        if request.method == "POST":
+            username = request.POST.get("username")
+            password = request.POST.get("password")
+
+            if not User.objects.filter(username=username).exists():
+                messages.error(request, "Invalid Username")
+                return redirect("login_page")
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
+                login(request, user)
+                messages.error(request, "Success")
+                if user.user_type == "admin":
+                    return redirect("admin_home/")
+                elif user.user_type == "student":
+                    return redirect("student_home/")
+                elif user.user_type == "teacher":
+                    return redirect("teacher_home/")
+            else:
+                messages.error(request, "Invalid password")
     context = {"homeurl": "login_page"}
     return render(request, "login.html", context)
 
 
 @login_required(login_url="login_page")
+@user_passes_test(is_admin, login_url="login_page")
 def admin_home(request):
     current_user = request.user
     queryset = User.objects.exclude(id=current_user.id)
@@ -48,6 +70,7 @@ def admin_home(request):
 
 
 @login_required(login_url="login_page")
+@user_passes_test(is_admin, login_url="login_page")
 def admin_view_profile(request):
     context = {
         "homeurl": "admin_home",
@@ -56,6 +79,7 @@ def admin_view_profile(request):
 
 
 @login_required(login_url="login_page")
+@user_passes_test(is_admin, login_url="login_page")
 def register(request):
     if request.method == "POST":
         data = request.POST
@@ -157,6 +181,7 @@ def logout_page(request):
 
 
 @login_required(login_url="login_page")
+@user_passes_test(is_admin, login_url="login_page")
 def update_user(request, id):
     userdetails = User.objects.get(id=id)
     allCourses = Course.objects.all()
@@ -258,6 +283,7 @@ def update_user(request, id):
 
 
 @login_required(login_url="login_page")
+@user_passes_test(is_admin, login_url="login_page")
 def deleteuser(request, id):
     queryset = User.objects.get(id=id)
     image_path = queryset.user_image.url
@@ -281,6 +307,7 @@ def deleteuser(request, id):
 
 
 @login_required(login_url="login_page")
+@user_passes_test(is_admin, login_url="login_page")
 def register_course(request):
     if request.method == "POST":
         data = request.POST
@@ -313,6 +340,7 @@ def register_course(request):
 
 
 @login_required(login_url="login_page")
+@user_passes_test(is_admin, login_url="login_page")
 def deletecourse(request, id):
     queryset = Course.objects.get(id=id)
     queryset.delete()
@@ -320,6 +348,7 @@ def deletecourse(request, id):
 
 
 @login_required(login_url="login_page")
+@user_passes_test(is_admin, login_url="login_page")
 def updatecourse(request, id):
     coursedetails = Course.objects.get(id=id)
     if request.method == "POST":
@@ -375,7 +404,9 @@ def updatecourse(request, id):
 
 
 @login_required(login_url="login_page")
+@user_passes_test(is_admin, login_url="login_page")
 def registerhall(request):
+    hallAll = Hall.objects.all()
     if request.method == "POST":
         data = request.POST
         hall_name = data.get("hallname")
@@ -393,15 +424,18 @@ def registerhall(request):
         hall.save()
         messages.info(request, "Successfully registered")
         return redirect("/register_hall/")
+    print(hallAll.values())
     context = {
         "style": "registerhall",
         "jslink": "registerhall",
         "homeurl": "admin_home",
+        "halls": hallAll,
     }
     return render(request, "registerHall.html", context)
 
 
 @login_required(login_url="login_page")
+@user_passes_test(is_student, login_url="login_page")
 def student_home(request):
     user = request.user
     student = Student.objects.get(user=user)
@@ -420,6 +454,7 @@ def student_home(request):
 
 
 @login_required(login_url="login_page")
+@user_passes_test(is_teacher, login_url="login_page")
 def teacher_home(request):
     context = {"homeurl": "student_home"}
     return render(request, "teacherHome.html", context)
