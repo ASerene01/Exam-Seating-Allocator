@@ -132,3 +132,9 @@ MEDIA_URL = "/media/"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 AUTH_USER_MODEL = "api.User"
+
+# Session will not expire at browser close
+SESSION_EXPIRE_AT_BROWSER_CLOSE = False
+
+# Sets the age of session cookies in seconds (1 week in this case)
+SESSION_COOKIE_AGE = 7 * 24 * 60 * 60

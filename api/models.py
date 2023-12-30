@@ -65,6 +65,7 @@ class Hall(models.Model):
     name = models.CharField(max_length=100)
     rows = models.IntegerField()
     columns = models.IntegerField()
+    # seats = models.IntegerField()
 
 
 class Seat(models.Model):
