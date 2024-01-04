@@ -65,7 +65,11 @@ def login_page(request):
 def admin_home(request):
     current_user = request.user
     queryset = User.objects.exclude(id=current_user.id)
-    context = {"AllUsers": queryset, "homeurl": "admin_home"}
+    context = {
+        "AllUsers": queryset,
+        "homeurl": "admin_home",
+        "style": "admin_home",
+    }
     return render(request, "adminHome.html", context)
 
 
@@ -74,6 +78,7 @@ def admin_home(request):
 def admin_view_profile(request):
     context = {
         "homeurl": "admin_home",
+        "style": "admin_home",
     }
     return render(request, "adminViewProfile.html", context)
 
@@ -171,6 +176,7 @@ def register(request):
         "jslink": "register",
         "Courses": querysetcourse,
         "homeurl": "admin_home",
+        "page_url": "user",
     }
     return render(request, "register.html", context)
 
@@ -271,6 +277,7 @@ def update_user(request, id):
         return redirect("admin_home")
     context = {
         "homeurl": "admin_home",
+        "page_url": "user",
         "userdetails": userdetails,
         "studentdetails": studentdetails,
         "studentcourses": courses,
@@ -335,7 +342,11 @@ def register_course(request):
         messages.info(request, "Course successfully registered")
         return redirect("/admin_home/")
     queryset = Course.objects.all()
-    context = {"homeurl": "admin_home", "Courses": queryset}
+    context = {
+        "homeurl": "admin_home",
+        "Courses": queryset,
+        "page_url": "course",
+    }
     return render(request, "courseRegister.html", context)
 
 
@@ -399,6 +410,7 @@ def updatecourse(request, id):
     context = {
         "homeurl": "admin_home",
         "coursedetails": coursedetails,
+        "page_url": "course",
     }
     return render(request, "courseUpdate.html", context)
 
@@ -429,6 +441,7 @@ def registerhall(request):
         "style": "registerhall",
         "jslink": "registerhall",
         "homeurl": "admin_home",
+        "page_url": "hall",
         "halls": hallAll,
     }
     return render(request, "registerHall.html", context)
