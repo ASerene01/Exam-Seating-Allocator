@@ -38,6 +38,15 @@
         name="columns"
       />
     </div>
+     <div class="mb-3">
+      <label for="InputSeats" class="form-label">Number of Seats</label>
+      <input
+        type="text"
+        class="form-control"
+        id="InputColumns"
+        name="seats"
+      />
+    </div>
     <button type="submit" class="btn btn-primary">Register Hall</button>
 
   </form>
@@ -61,8 +70,8 @@
      
       
       <td>
-        <a href="/delete_course/{{course.id}}" class="btn btn-danger m-2">Delete</button>
-          <a href="/update_course/{{course.id}}" class="btn btn-success m-2">Update</button>
+        <a href="/delete_hall/{{hall.id}}" class="btn btn-danger m-2">Delete</button>
+          <a href="/update_hall/{{hall.id}}" class="btn btn-success m-2">Update</button>
       </td>
     </tr>
     {%endfor%}

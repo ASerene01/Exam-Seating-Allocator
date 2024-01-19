@@ -424,19 +424,17 @@ def registerhall(request):
         hall_name = data.get("hallname")
         rows = data.get("rows")
         columns = data.get("columns")
+        seats = data.get("seats")
         halls = Hall.objects.filter(name=hall_name)
         if halls.exists():
             messages.info(request, "Hall already registered")
             return redirect("/register_hall/")
         hall = Hall.objects.create(
-            name=hall_name,
-            rows=rows,
-            columns=columns,
+            name=hall_name, rows=rows, columns=columns, noOfSeats=seats
         )
         hall.save()
-        messages.info(request, "Successfully registered")
-        return redirect("/register_hall/")
-    print(hallAll.values())
+
+        return redirect("/edit_hall_layout/" + hall_name)
     context = {
         "style": "registerhall",
         "jslink": "registerhall",
@@ -445,6 +443,27 @@ def registerhall(request):
         "halls": hallAll,
     }
     return render(request, "registerHall.html", context)
+
+
+@user_passes_test(is_admin, login_url="login_page")
+def deletehall(request, id):
+    queryset = Hall.objects.get(id=id)
+    queryset.delete()
+    return redirect("register_hall")
+
+
+@user_passes_test(is_admin, login_url="login_page")
+def edithalllayout(request, name):
+    queryset = Hall.objects.get(name=name)
+
+    context = {
+        "style": "edithall",
+        "jslink": "edithall",
+        "homeurl": "admin_home",
+        "hallRows": range(0, queryset.rows),
+        "hallColumns": range(0, queryset.columns),
+    }
+    return render(request, "editHall.html", context)
 
 
 @login_required(login_url="login_page")

@@ -55,8 +55,8 @@ class UserAdmin(admin.ModelAdmin):
 
 
 class HallAdmin(admin.ModelAdmin):
-    list_display = ("name", "rows", "columns")
-    fields = ("name", "rows", "columns")
+    list_display = ("id", "name", "rows", "columns")
+    fields = ("id", "name", "rows", "columns")
 
 
 admin.site.register(User, UserAdmin)

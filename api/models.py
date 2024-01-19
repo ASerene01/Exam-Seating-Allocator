@@ -65,11 +65,13 @@ class Hall(models.Model):
     name = models.CharField(max_length=100)
     rows = models.IntegerField()
     columns = models.IntegerField()
-    # seats = models.IntegerField()
+    noOfSeats = models.IntegerField(default=1)
 
 
 class Seat(models.Model):
-    hall = models.ForeignKey(Hall, on_delete=models.CASCADE)
+    hall = models.ForeignKey(
+        Hall, on_delete=models.CASCADE, related_name="seats", default=6
+    )
     row = models.IntegerField()
     column = models.IntegerField()
 

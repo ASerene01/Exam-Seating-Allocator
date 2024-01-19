@@ -1,0 +1,16 @@
+{%extends "base.html"%} {%block start%} {% csrf_token %}
+<div class="hall">
+  <div class="screen">Screen</div>
+
+ {% for row_number in hallRows %}
+      <div class="row">
+       
+        {% for seat_number in hallColumns %}
+        
+          <div class="seat"></div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+{%endblock%}
+</div>

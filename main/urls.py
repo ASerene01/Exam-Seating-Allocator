@@ -34,6 +34,9 @@ urlpatterns = [
     path("delete_course/<id>", deletecourse, name="delete_course"),
     path("update_course/<id>", updatecourse, name="update_course"),
     path("register_hall/", registerhall, name="register_hall"),
+    path("delete_hall/<id>", deletehall, name="delete_halll"),
+    path("edit_hall_layout/<name>", edithalllayout, name="edit_hall_layout"),
+    # path("update_hall/<id>", updatehall, name="update_hall"),
     path("student_home/", student_home, name="student_home"),
     path("teacher_home/", teacher_home, name="teacher_home"),
 ]
