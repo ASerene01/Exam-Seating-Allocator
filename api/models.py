@@ -74,6 +74,7 @@ class Seat(models.Model):
     )
     row = models.IntegerField()
     column = models.IntegerField()
+    is_deleted = models.BooleanField(default=False)
 
 
 """ 

@@ -37,6 +37,10 @@ urlpatterns = [
     path("delete_hall/<id>", deletehall, name="delete_halll"),
     path("edit_hall_layout/<name>", edithalllayout, name="edit_hall_layout"),
     # path("update_hall/<id>", updatehall, name="update_hall"),
+    path(
+        "remove_seat_from_hall/<id>", removeseatfromhall, name="remove_seat_from_hall"
+    ),
+    path("add_seat_to_hall/<id>", addseattohall, name="add_seat_to_hall"),
     path("student_home/", student_home, name="student_home"),
     path("teacher_home/", teacher_home, name="teacher_home"),
 ]

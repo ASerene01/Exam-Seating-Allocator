@@ -433,6 +433,10 @@ def registerhall(request):
             name=hall_name, rows=rows, columns=columns, noOfSeats=seats
         )
         hall.save()
+        # Create seats associated with the hall
+        for row in range(int(hall.rows)):
+            for column in range(int(hall.columns)):
+                Seat.objects.create(hall=hall, row=row, column=column)
 
         return redirect("/edit_hall_layout/" + hall_name)
     context = {
@@ -454,16 +458,36 @@ def deletehall(request, id):
 
 @user_passes_test(is_admin, login_url="login_page")
 def edithalllayout(request, name):
-    queryset = Hall.objects.get(name=name)
-
+    hall = Hall.objects.get(name=name)
+    seatNumbers = hall.seats.all()
+    print(seatNumbers)
     context = {
         "style": "edithall",
         "jslink": "edithall",
         "homeurl": "admin_home",
-        "hallRows": range(0, queryset.rows),
-        "hallColumns": range(0, queryset.columns),
+        "hallRows": range(0, hall.rows),
+        "hallColumns": range(0, hall.columns),
+        "seatNumbers": seatNumbers,
     }
     return render(request, "editHall.html", context)
+
+
+@user_passes_test(is_admin, login_url="login_page")
+def removeseatfromhall(request, id):
+    seatToDelete = Seat.objects.get(id=id)
+    hallName = seatToDelete.hall.name
+    seatToDelete.is_deleted = True
+    seatToDelete.save()
+    return redirect("/edit_hall_layout/" + hallName)
+
+
+@user_passes_test(is_admin, login_url="login_page")
+def addseattohall(request, id):
+    seatToAdd = Seat.objects.get(id=id)
+    hallName = seatToAdd.hall.name
+    seatToAdd.is_deleted = False
+    seatToAdd.save()
+    return redirect("/edit_hall_layout/" + hallName)
 
 
 @login_required(login_url="login_page")

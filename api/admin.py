@@ -59,9 +59,15 @@ class HallAdmin(admin.ModelAdmin):
     fields = ("id", "name", "rows", "columns")
 
 
+class SeatAdmin(admin.ModelAdmin):
+    list_display = ("id", "hall", "row", "column")
+    fields = ("id", "hall", "row", "column")
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Teacher, TeacherAdmin)
 admin.site.register(Student, StudentAdmin)
 admin.site.register(RTE, RTEAdmin)
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Hall, HallAdmin)
+admin.site.register(Seat, SeatAdmin)

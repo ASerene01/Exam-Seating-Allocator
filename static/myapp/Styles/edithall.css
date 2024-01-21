@@ -17,12 +17,21 @@
 .seat {
   width: 100px;
   height: 100px;
-  background-color: #ddd;
   border-radius: 5px;
   cursor: pointer;
+  background-color: #d5d4d4;
   transition: background-color 0.3s;
 }
 
 .seat:hover {
   background-color: #a6a6a6;
+}
+
+.seatdeleted {
+  width: 100px;
+  height: 100px;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #d5d4d4;
+  opacity: 0.5;
 }
