@@ -1,25 +1,51 @@
 {%extends "base.html"%} {%block start%} {% csrf_token %}
 <div class="hall">
-  
   <div class="screen">Screen</div>
-
- {% for row_number in hallRows %}
-      <div class="row">
-       
-        {% for column_number in hallColumns %}
-         {%for seatNumber in seatNumbers%}
-         
-            {%if seatNumber.row == row_number and seatNumber.column == column_number%}
-          <div class="seat{% if seatNumber.is_deleted %}deleted{% endif %}">
-              {% if seatNumber.is_deleted %}
-              <a href="/add_seat_to_hall/{{seatNumber.id}}"class="btn seatbutton">{{row_number}}{{column_number}}</a><br>
-              {%else%}
-              <a href="/remove_seat_from_hall/{{seatNumber.id}}"class="btn seatbutton">{{row_number}}{{column_number}}</a><br>
+  <div class="row">     
+    {%for hallSpace in hallSpaces%}
+    {%if lastColumn.columnAfter != hallSpace.columnAfter%}
+      <div class="seat{% if hallSpace.is_space == False %}deleted{% endif %}">
+        
+          {% if hallSpace.is_space == False %}
+            <a href="/add_space_to_hall/{{hallSpace.id}}"class="btn seatbutton">Add Space After this column</a><br>
+          {%else%}
+            <a href="/remove_space_from_hall/{{hallSpace.id}}"class="btn seatbutton">Remove Space After this column</a><br>
+          {%endif%}
+           </div>
+        {%else%}
+         <div class="seat">
+        
+         <span>Cannot Add space After this column</span>
+           </div>
+          
+        {%endif%}
+     
+      {%if hallSpace.is_space == True%}
+              <div class="space">
+               
+              </div>
               {%endif%}
-             
-          </div>
-           {%endif%}
-            {%endfor%}
+    {%endfor%}
+  </div>
+
+  {%for row_number in hallRows %}
+      <div class="row">
+        {% for hallSpace in hallSpaces %}
+         {%for seatNumber in seatNumbers%}
+            {%if seatNumber.row == row_number and seatNumber.column == hallSpace.columnAfter%}
+              <div class="seat{% if seatNumber.is_deleted %}deleted{% endif %}">
+                  {% if seatNumber.is_deleted %}
+                    <a href="/add_seat_to_hall/{{seatNumber.id}}"class="btn seatbutton">{{row_number}}{{hallSpace.columnAfter}}</a><br>
+                  {%else%}
+                    <a href="/remove_seat_from_hall/{{seatNumber.id}}"class="btn seatbutton">{{row_number}}{{hallSpace.columnAfter}}</a><br>
+                  {%endif%}
+              </div>
+              {%if hallSpace.is_space == True%}
+              <div class="space">
+              </div>
+              {%endif%}
+            {%endif%}
+          {%endfor%}
         {% endfor %}
       </div>
     {% endfor %}

@@ -437,6 +437,8 @@ def registerhall(request):
         for row in range(int(hall.rows)):
             for column in range(int(hall.columns)):
                 Seat.objects.create(hall=hall, row=row, column=column)
+        for column in range(int(hall.columns)):
+            HallSpaces.objects.create(hall=hall, columnAfter=column)
 
         return redirect("/edit_hall_layout/" + hall_name)
     context = {
@@ -459,15 +461,21 @@ def deletehall(request, id):
 @user_passes_test(is_admin, login_url="login_page")
 def edithalllayout(request, name):
     hall = Hall.objects.get(name=name)
+    hallspaces = hall.spaces.all()
+    forLastColumn = hallspaces.order_by("columnAfter")
+    lastColumn = forLastColumn.last()
+
     seatNumbers = hall.seats.all()
-    print(seatNumbers)
     context = {
         "style": "edithall",
         "jslink": "edithall",
         "homeurl": "admin_home",
+        "hall": hall,
         "hallRows": range(0, hall.rows),
         "hallColumns": range(0, hall.columns),
         "seatNumbers": seatNumbers,
+        "hallSpaces": hallspaces,
+        "lastColumn": lastColumn,
     }
     return render(request, "editHall.html", context)
 
@@ -487,6 +495,24 @@ def addseattohall(request, id):
     hallName = seatToAdd.hall.name
     seatToAdd.is_deleted = False
     seatToAdd.save()
+    return redirect("/edit_hall_layout/" + hallName)
+
+
+@user_passes_test(is_admin, login_url="login_page")
+def addspacetohall(request, id):
+    spaceToAdd = HallSpaces.objects.get(id=id)
+    hallName = spaceToAdd.hall.name
+    spaceToAdd.is_space = True
+    spaceToAdd.save()
+    return redirect("/edit_hall_layout/" + hallName)
+
+
+@user_passes_test(is_admin, login_url="login_page")
+def removespacefromhall(request, id):
+    spaceToRemove = HallSpaces.objects.get(id=id)
+    hallName = spaceToRemove.hall.name
+    spaceToRemove.is_space = False
+    spaceToRemove.save()
     return redirect("/edit_hall_layout/" + hallName)
 
 

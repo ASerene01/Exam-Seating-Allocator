@@ -34,6 +34,21 @@
   align-items: center;
 }
 
+.space {
+  width: 4vw;
+  height: 4vw;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #ff000000;
+  font-size: 10px;
+  padding: 0;
+  text-align: center;
+  transition: background-color 0.3s;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
 .seat:hover {
   background-color: #a6a6a6;
 }

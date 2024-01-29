@@ -64,6 +64,11 @@ class SeatAdmin(admin.ModelAdmin):
     fields = ("id", "hall", "row", "column")
 
 
+class HallSpaceAdmin(admin.ModelAdmin):
+    list_display = ("hall", "columnAfter")
+    fields = ("hall", "columnAfter")
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Teacher, TeacherAdmin)
 admin.site.register(Student, StudentAdmin)
@@ -71,3 +76,4 @@ admin.site.register(RTE, RTEAdmin)
 admin.site.register(Course, CourseAdmin)
 admin.site.register(Hall, HallAdmin)
 admin.site.register(Seat, SeatAdmin)
+admin.site.register(HallSpaces, HallSpaceAdmin)
