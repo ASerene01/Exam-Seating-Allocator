@@ -446,10 +446,11 @@ def registerhall(request):
         hall.save()
         # Create seats associated with the hall
         for row in range(int(hall.rows)):
+            HallRowSpaces.objects.create(hall=hall, rowAfter=row)
             for column in range(int(hall.columns)):
                 Seat.objects.create(hall=hall, row=row, column=column)
         for column in range(int(hall.columns)):
-            HallSpaces.objects.create(hall=hall, columnAfter=column)
+            HallColumnSpaces.objects.create(hall=hall, columnAfter=column)
 
         return redirect("/edit_hall_layout/" + hall_name)
     context = {
@@ -472,10 +473,10 @@ def deletehall(request, id):
 @user_passes_test(is_admin, login_url="login_page")
 def edithalllayout(request, name):
     hall = Hall.objects.get(name=name)
-    hallspaces = hall.spaces.all()
-    forLastColumn = hallspaces.order_by("columnAfter")
+    hallcolumnspaces = hall.columnspaces.all()
+    forLastColumn = hallcolumnspaces.order_by("columnAfter")
     lastColumn = forLastColumn.last()
-
+    hallrowspaces = hall.rowspaces.all()
     seatNumbers = hall.seats.all()
     context = {
         "style": "edithall",
@@ -485,8 +486,9 @@ def edithalllayout(request, name):
         "hallRows": range(0, hall.rows),
         "hallColumns": range(0, hall.columns),
         "seatNumbers": seatNumbers,
-        "hallSpaces": hallspaces,
+        "hallColumnSpaces": hallcolumnspaces,
         "lastColumn": lastColumn,
+        "hallRowSpaces": hallrowspaces,
     }
     return render(request, "editHall.html", context)
 
@@ -494,8 +496,8 @@ def edithalllayout(request, name):
 @user_passes_test(is_admin, login_url="login_page")
 def viewhalllayout(request, id):
     hall = Hall.objects.get(id=id)
-    hallspaces = hall.spaces.all()
-
+    hallcolumnspaces = hall.columnspaces.all()
+    hallrowspaces = hall.rowspaces.all()
     seatNumbers = hall.seats.all()
     context = {
         "style": "view_hall_layout",
@@ -505,7 +507,8 @@ def viewhalllayout(request, id):
         "hallRows": range(0, hall.rows),
         "hallColumns": range(0, hall.columns),
         "seatNumbers": seatNumbers,
-        "hallSpaces": hallspaces,
+        "hallColumnSpaces": hallcolumnspaces,
+        "hallRowSpaces": hallrowspaces,
     }
     return render(request, "viewHallLayout.html", context)
 
@@ -529,8 +532,8 @@ def addseattohall(request, id):
 
 
 @user_passes_test(is_admin, login_url="login_page")
-def addspacetohall(request, id):
-    spaceToAdd = HallSpaces.objects.get(id=id)
+def addcolumnspacetohall(request, id):
+    spaceToAdd = HallColumnSpaces.objects.get(id=id)
     hallName = spaceToAdd.hall.name
     spaceToAdd.is_space = True
     spaceToAdd.save()
@@ -538,8 +541,26 @@ def addspacetohall(request, id):
 
 
 @user_passes_test(is_admin, login_url="login_page")
-def removespacefromhall(request, id):
-    spaceToRemove = HallSpaces.objects.get(id=id)
+def removecolumnspacefromhall(request, id):
+    spaceToRemove = HallColumnSpaces.objects.get(id=id)
+    hallName = spaceToRemove.hall.name
+    spaceToRemove.is_space = False
+    spaceToRemove.save()
+    return redirect("/edit_hall_layout/" + hallName)
+
+
+@user_passes_test(is_admin, login_url="login_page")
+def addrowspacetohall(request, id):
+    spaceToAdd = HallRowSpaces.objects.get(id=id)
+    hallName = spaceToAdd.hall.name
+    spaceToAdd.is_space = True
+    spaceToAdd.save()
+    return redirect("/edit_hall_layout/" + hallName)
+
+
+@user_passes_test(is_admin, login_url="login_page")
+def removerowspacefromhall(request, id):
+    spaceToRemove = HallRowSpaces.objects.get(id=id)
     hallName = spaceToRemove.hall.name
     spaceToRemove.is_space = False
     spaceToRemove.save()

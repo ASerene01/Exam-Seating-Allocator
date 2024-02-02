@@ -1,19 +1,20 @@
 {%extends "base.html"%} {%block start%} {% csrf_token %}
 <div class="hall">
-  <div class="screen ">Screen</div>
+  <div class="screen">Screen</div>
   
 
-  {%for row_number in hallRows %}
+
+  {%for row_number in hallRowSpaces %}
   
       <div class="row">
-        {% for hallSpace in hallSpaces %}
+        {% for hallColumnSpace in hallColumnSpaces %}
          {%for seatNumber in seatNumbers%}
-            {%if seatNumber.row == row_number and seatNumber.column == hallSpace.columnAfter%}
+            {%if seatNumber.row == row_number.rowAfter and seatNumber.column == hallColumnSpace.columnAfter%}
               <div class="seat{% if seatNumber.is_deleted %}deleted{% endif %}">
                   
-                  {{row_number}}{{hallSpace.columnAfter}}
+                  {{row_number.rowAfter}}{{hallColumnSpace.columnAfter}}
               </div>
-              {%if hallSpace.is_space == True%}
+              {%if hallColumnSpace.is_space == True%}
               <div class="space">
               </div>
               {%endif%}
@@ -21,6 +22,11 @@
           {%endfor%}
         {% endfor %}
       </div>
+       {%if row_number.is_space == True%}
+              <div class="space">
+               
+              </div>
+              {%endif%}
     {% endfor %}
   </div>
 {%endblock%}

@@ -14,6 +14,7 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+
 from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
@@ -42,11 +43,25 @@ urlpatterns = [
         "remove_seat_from_hall/<id>", removeseatfromhall, name="remove_seat_from_hall"
     ),
     path("add_seat_to_hall/<id>", addseattohall, name="add_seat_to_hall"),
-    path("add_space_to_hall/<id>", addspacetohall, name="add_space_to_hall"),
     path(
-        "remove_space_from_hall/<id>",
-        removespacefromhall,
-        name="remove_space_from_hall",
+        "add_columnspace_to_hall/<id>",
+        addcolumnspacetohall,
+        name="add_columnspace_to_hall",
+    ),
+    path(
+        "remove_columnspace_from_hall/<id>",
+        removecolumnspacefromhall,
+        name="remove_columnspace_from_hall",
+    ),
+    path(
+        "add_rowspace_to_hall/<id>",
+        addrowspacetohall,
+        name="add_rowspace_to_hall",
+    ),
+    path(
+        "remove_rowspace_from_hall/<id>",
+        removerowspacefromhall,
+        name="remove_rowspace_from_hall",
     ),
     path("view_hall_layout/<id>", viewhalllayout, name="view_hall_layout"),
     path("student_home/", student_home, name="student_home"),

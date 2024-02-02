@@ -77,11 +77,19 @@ class Seat(models.Model):
     is_deleted = models.BooleanField(default=False)
 
 
-class HallSpaces(models.Model):
+class HallColumnSpaces(models.Model):
     hall = models.ForeignKey(
-        Hall, on_delete=models.CASCADE, related_name="spaces", blank=True
+        Hall, on_delete=models.CASCADE, related_name="columnspaces", blank=True
     )
     columnAfter = models.IntegerField(blank=True)
+    is_space = models.BooleanField(default=False)
+
+
+class HallRowSpaces(models.Model):
+    hall = models.ForeignKey(
+        Hall, on_delete=models.CASCADE, related_name="rowspaces", blank=True
+    )
+    rowAfter = models.IntegerField(blank=True)
     is_space = models.BooleanField(default=False)
 
 
