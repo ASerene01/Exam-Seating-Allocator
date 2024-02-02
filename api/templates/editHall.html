@@ -31,6 +31,7 @@
   {%for row_number in hallRows %}
       <div class="row">
         {% for hallSpace in hallSpaces %}
+        
          {%for seatNumber in seatNumbers%}
             {%if seatNumber.row == row_number and seatNumber.column == hallSpace.columnAfter%}
               <div class="seat{% if seatNumber.is_deleted %}deleted{% endif %}">

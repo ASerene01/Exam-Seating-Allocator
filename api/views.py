@@ -313,7 +313,18 @@ def deleteuser(request, id):
     return redirect("admin_home")
 
 
-@login_required(login_url="login_page")
+@user_passes_test(is_admin, login_url="login_page")
+def view_courses(request):
+    courses = Course.objects.all()
+    context = {
+        "homeurl": "admin_home",
+        "Courses": courses,
+        "page_url": "course",
+        "style": "view_courses",
+    }
+    return render(request, "viewCourses.html", context)
+
+
 @user_passes_test(is_admin, login_url="login_page")
 def register_course(request):
     if request.method == "POST":
@@ -478,6 +489,25 @@ def edithalllayout(request, name):
         "lastColumn": lastColumn,
     }
     return render(request, "editHall.html", context)
+
+
+@user_passes_test(is_admin, login_url="login_page")
+def viewhalllayout(request, id):
+    hall = Hall.objects.get(id=id)
+    hallspaces = hall.spaces.all()
+
+    seatNumbers = hall.seats.all()
+    context = {
+        "style": "view_hall_layout",
+        "jslink": "view_hall_layout",
+        "homeurl": "admin_home",
+        "hall": hall,
+        "hallRows": range(0, hall.rows),
+        "hallColumns": range(0, hall.columns),
+        "seatNumbers": seatNumbers,
+        "hallSpaces": hallspaces,
+    }
+    return render(request, "viewHallLayout.html", context)
 
 
 @user_passes_test(is_admin, login_url="login_page")

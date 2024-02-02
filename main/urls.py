@@ -30,11 +30,12 @@ urlpatterns = [
     path("delete_user/<id>", deleteuser, name="delete_user"),
     path("register/", register, name="register"),
     path("logout/", logout_page, name="logout"),
+    path("view_courses/", view_courses, name="view_courses"),
     path("register_course/", register_course, name="register_course"),
     path("delete_course/<id>", deletecourse, name="delete_course"),
     path("update_course/<id>", updatecourse, name="update_course"),
     path("register_hall/", registerhall, name="register_hall"),
-    path("delete_hall/<id>", deletehall, name="delete_halll"),
+    path("delete_hall/<id>", deletehall, name="delete_hall"),
     path("edit_hall_layout/<name>", edithalllayout, name="edit_hall_layout"),
     # path("update_hall/<id>", updatehall, name="update_hall"),
     path(
@@ -47,6 +48,7 @@ urlpatterns = [
         removespacefromhall,
         name="remove_space_from_hall",
     ),
+    path("view_hall_layout/<id>", viewhalllayout, name="view_hall_layout"),
     path("student_home/", student_home, name="student_home"),
     path("teacher_home/", teacher_home, name="teacher_home"),
 ]

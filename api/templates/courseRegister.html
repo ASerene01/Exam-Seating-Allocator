@@ -1,7 +1,7 @@
 {%extends "base.html"%} {%block start%}
 <div class="container mt-5">
   <form
-    class="col-6 mx-auto card p-3 shadow-lg"
+    class="col-6 mx-auto card p-4 shadow-lg forms"
     method="post"
     enctype="multipart/form-data"
   >
@@ -14,89 +14,65 @@
     </div>
 
     {% endif %}
-    <div class="row">
-      <div class="col mb-3">
-        <label for="InputCourse" class="form-label">Course</label>
+
+    <div class="col mb-3">
+      <div class="form-floating mb-3">
         <input
           type="text"
-          class="form-control"
+          class="form-control mb-5 w-50 inputfield"
           id="InputCourse"
           name="course"
-          value="{{ data.firstname }}"
+          placeholder="Course Name"
+          required
         />
-         <div class="col mb-3">
-        <label for="fieldofstudy" class="form-label">Field of Study</label>
+        <label class="mb-3 form-label" for="InputCourse">Course Name</label>
+      </div>
+
+      <div class="mb-3">
         <select
           name="fieldofstudy"
           id="fieldofstudy"
-          class="form-select bg-dark text-white mb-3"
+          class="form-select bg-dark text-white mb-5"
           aria-label="Student"
           style="width: 30%"
         >
-          <option selected value="computing">Computing</option>
+          <option selected disabled>Field of study</option>
+          <option value="computing">Computing</option>
           <option value="multimedia">Multimedia</option>
           <option value="networking">Networking</option>
         </select>
       </div>
-       <div class="col mb-3">
-        <label for="year" class="form-label">Year</label>
+      <div class="mb-3">
         <select
           name="year"
           id="year"
-          class="form-select bg-dark text-white mb-3"
+          class="form-select bg-dark text-white mb-5"
           aria-label="Student"
           style="width: 30%"
         >
-          <option selected value="First">First</option>
+          <option selected disabled>Year</option>
+          <option value="First">First</option>
           <option value="second">Second</option>
           <option value="third">Third</option>
         </select>
       </div>
-       <div class="col mb-3">
-        <label for="semester" class="form-label">Semester</label>
+      <div class="mb-3">
         <select
           name="semester"
           id="semester"
-          class="form-select bg-dark text-white mb-3"
+          class="form-select bg-dark text-white mb-5"
           aria-label="Student"
           style="width: 30%"
         >
-          <option selected value="first">First</option>
+          <option selected disabled>Semester</option>
+          <option value="first">First</option>
           <option value="second">Second</option>
         </select>
       </div>
-      </div>
-      
+    </div>
+
     <button type="submit" class="btn btn-primary">Register</button>
-</form>
-  <table class="table table-dark table-bordered mt-5" style="border-width:4px; border-color:grey;">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Course Name</th>
-      <th scope="col">Field of Study</th>
-      <th scope="col">Year</th>
-      <th scope="col">Semester</th>
-      <th scope="col">Action</th>
-    </tr>
-  </thead>
-  <tbody >
-    {%for course in Courses%}
-    <tr>
-      <th scope="row">{{forloop.counter}}</th>
-      <td>{{course.name| capfirst}}</td>
-      <td>{{course.fieldofstudy| capfirst}}</td>
-      <td>{{course.year| capfirst}}</td>
-      <td>{{course.semester| capfirst}}</td>
-      
-      <td>
-        <a href="/delete_course/{{course.id}}" class="btn btn-danger m-2">Delete</button>
-          <a href="/update_course/{{course.id}}" class="btn btn-success m-2">Update</button>
-      </td>
-    </tr>
-    {%endfor%}
-  </tbody>
-</table>
+  </form>
 </div>
-    {%endblock%}
-  
+
+{%endblock%}

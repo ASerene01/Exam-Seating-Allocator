@@ -26,21 +26,38 @@
     />
     {% endif %}
     <style>
-      table,
-      th,
-      td {
-        border: 1px solid black;
-      }
+      .register-button {
+  background: #4044ed;
+  color:white;
+}
+.register-button:hover{
+   background: #4044ed;
+  color:white;
+  opacity: 0.5;
+
+}
+
+.forms{
+  background:#1E1F25;
+  color:white;
+}
+
+.inputfield{
+  background-color:#d5d4d400;
+  color:white;
+
+}
+
     </style>
   </head>
 
-  <body>
-    <nav class="navbar dark p-3 bg-secondary shadow-lg">
+  <body style="background-color:#27262C;">
+    <nav class="navbar dark p-3 " style="background:#222426">
       <div class="container-fluid">
         <a href="{% if homeurl == "login_page" %} /
         {%else%}
         /{{homeurl}}/
-        {%endif%}" class="navbar-brand">Exam Seating Allocator</a>
+        {%endif%}" class="navbar-brand" style="color:lightblue">Exam Seating Allocator</a>
         <form class="d-flex" role="search">
           {%if request.user.is_authenticated%}
             {%if user.user_type == "admin"%}
@@ -48,13 +65,13 @@
                   <img src="/media/{{user.user_image}}" alt="Profile Picture" class = "navProfile" >
               </a>
             {%endif%}
-          <a href="/logout/" class="btn btn-success" type="submit">Logout</a>
+          <a href="/logout/" class="btn" style="background:#4044ED; color:white;" type="submit">Logout</a>
           {%endif%}
         </form>
       </div>
     </nav>
     {% if homeurl == "admin_home" %}
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-md navbar-dark" style="border-style: none none solid none; border-color: #2C4D6F;">
         <div class="container">
            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -62,7 +79,7 @@
           <div class="collapse navbar-collapse" id="navbarNavDropdown">
             <ul class="navbar-nav mx-auto">
               <li class="nav-item">
-                <a class="nav-link mx-3 {%if page_url%}{%if page_url == "course"%}active{%endif%}{%endif%}" aria-current="page" href="/register_course/">Courses</a>
+                <a class="nav-link mx-3 {%if page_url%}{%if page_url == "course"%}active{%endif%}{%endif%}" aria-current="page" href="/view_courses/">Courses</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link mx-3 {%if page_url%}{%if page_url == "user"%}active{%endif%}{%endif%}" href="/register/">Users</a>
