@@ -1,0 +1,38 @@
+{%extends "base.html"%} {%block start%} {% csrf_token %}
+<div class="container mt-5">
+  <div class="d-flex justify-content-end">
+    <a class="btn register-button btn-lg" href="/create_new_event/">Create a new Event</a>
+  </div>
+  
+  <table class="table mt-5 table-dark">
+  <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Event Name</th>
+      <th scope="col">Date </th>
+      <th scope="col">Start Time </th>
+      <th scope="col">End Time</th>
+      <th scope="col">Action</th>
+    </tr>
+  </thead>
+  <tbody >
+    {%for event in events%}
+    <tr>
+      <th scope="row">{{forloop.counter}}</th>
+      <td>{{event.name| capfirst}}</td>
+      <td>{{event.date}}</td>
+      <td>{{event.start_time}}</td>
+      <td>{{event.end_time}}</td>
+      
+      <td>
+         <a href="/update_course/{{course.id}}" class="btn btn-success m-2">Edit</button>
+        <a href="/delete_course/{{course.id}}" class="btn btn-danger m-2">Delete</button>
+         
+      </td>
+    </tr>
+    {%endfor%}
+  </tbody>
+</table>
+</div>
+    {%endblock%}
+  

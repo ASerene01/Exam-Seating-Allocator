@@ -1,0 +1,7 @@
+.form-floating > :disabled ~ label::after {
+  background-color: red !important;
+}
+
+.inputfield {
+  background-color: red;
+}

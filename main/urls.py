@@ -24,8 +24,11 @@ from api.views import *
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("demo/", demo, name="demo"),
     path("", login_page, name="login_page"),
     path("admin_home/", admin_home, name="admin_home"),
+    path("student_home/", student_home, name="student_home"),
+    path("teacher_home/", teacher_home, name="teacher_home"),
     path("admin_view_profile/", admin_view_profile, name="admin_view_profile"),
     path("update_user/<id>", update_user, name="update_user"),
     path("delete_user/<id>", deleteuser, name="delete_user"),
@@ -64,8 +67,9 @@ urlpatterns = [
         name="remove_rowspace_from_hall",
     ),
     path("view_hall_layout/<id>", viewhalllayout, name="view_hall_layout"),
-    path("student_home/", student_home, name="student_home"),
-    path("teacher_home/", teacher_home, name="teacher_home"),
+    path("view_hall_layout/<id>", viewhalllayout, name="view_hall_layout"),
+    path("admin_events_view/", admin_events_view, name="admin_events_view"),
+    path("create_new_event/", create_new_event, name="create_new_event"),
 ]
 
 

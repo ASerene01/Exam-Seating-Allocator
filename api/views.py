@@ -74,6 +74,32 @@ def admin_home(request):
 
 
 @login_required(login_url="login_page")
+@user_passes_test(is_student, login_url="login_page")
+def student_home(request):
+    user = request.user
+    student = Student.objects.get(user=user)
+    fieldofstudy = student.fieldofstudy
+    year = student.year
+    semester = student.semester
+    courses = student.courses.all()
+    context = {
+        "homeurl": "student_home",
+        "fieldofstudy": fieldofstudy,
+        "year": year,
+        "semester": semester,
+        "courses": courses,
+    }
+    return render(request, "studentHome.html", context)
+
+
+@login_required(login_url="login_page")
+@user_passes_test(is_teacher, login_url="login_page")
+def teacher_home(request):
+    context = {"homeurl": "student_home"}
+    return render(request, "teacherHome.html", context)
+
+
+@login_required(login_url="login_page")
 @user_passes_test(is_admin, login_url="login_page")
 def admin_view_profile(request):
     context = {
@@ -567,30 +593,41 @@ def removerowspacefromhall(request, id):
     return redirect("/edit_hall_layout/" + hallName)
 
 
-@login_required(login_url="login_page")
-@user_passes_test(is_student, login_url="login_page")
-def student_home(request):
-    user = request.user
-    student = Student.objects.get(user=user)
-    fieldofstudy = student.fieldofstudy
-    year = student.year
-    semester = student.semester
-    courses = student.courses.all()
-    context = {
-        "homeurl": "student_home",
-        "fieldofstudy": fieldofstudy,
-        "year": year,
-        "semester": semester,
-        "courses": courses,
-    }
-    return render(request, "studentHome.html", context)
+from .forms import EventForm
 
 
-@login_required(login_url="login_page")
-@user_passes_test(is_teacher, login_url="login_page")
-def teacher_home(request):
-    context = {"homeurl": "student_home"}
-    return render(request, "teacherHome.html", context)
+def admin_events_view(request):
+    events = Event.objects.all()
+    context = {"homeurl": "admin_home", "events": events}
+    return render(request, "viewEvents.html", context)
+
+
+def create_new_event(request):
+    if request.method == "POST":
+        data = request.POST
+        name = data.get("event")
+        date = data.get("Date")
+        startTime = data.get("startTime")
+        endTime = data.get("endTime")
+        eventCheck = Event.objects.filter(
+            date=date, start_time=startTime, end_time=endTime
+        )
+        if eventCheck.exists():
+            messages.info(request, "Event Already There ")
+            return redirect("/admin_events_view/")
+        event = Event.objects.create(
+            name=name, date=date, start_time=startTime, end_time=endTime
+        )
+        return redirect("/admin_events_view/")
+
+        event.save()
+    context = {"homeurl": "admin_home", "style": "create_new_event"}
+    return render(request, "createNewEvent.html", context)
+
+
+def demo(request):
+    context = {"homeurl": "admin_home", "form": EventForm()}
+    return render(request, "demo.html", context)
 
 
 def get_section(numberofstudents, lastsection):

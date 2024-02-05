@@ -93,14 +93,25 @@ class HallRowSpaces(models.Model):
     is_space = models.BooleanField(default=False)
 
 
-""" 
 class Event(models.Model):
+    name = models.CharField(max_length=100,blank=True)
     date = models.DateField()
-    courses = models.ManyToManyField(Course)
+    start_time = models.TimeField()
+    end_time = models.TimeField()
 
 
+class EventCourses(models.Model):
+    event = models.ForeignKey(
+        Event, on_delete=models.CASCADE, related_name="event", blank=True
+    )
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, related_name="event", blank=True
+    )
 
+
+"""
 class Allocation(models.Model):
+    event
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     course = models.ForeignKey(Course, on_delete=models.CASCADE)
     seat = models.OneToOneField(Seat, on_delete=models.SET_NULL, null=True, blank=True)
