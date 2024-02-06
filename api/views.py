@@ -614,15 +614,31 @@ def create_new_event(request):
         )
         if eventCheck.exists():
             messages.info(request, "Event Already There ")
-            return redirect("/admin_events_view/")
+            return redirect("/create_new_event/")
         event = Event.objects.create(
             name=name, date=date, start_time=startTime, end_time=endTime
         )
-        return redirect("/admin_events_view/")
-
         event.save()
+        id = event.id
+        return redirect("/create_new_event_courses/" + str(id))
+
     context = {"homeurl": "admin_home", "style": "create_new_event"}
     return render(request, "createNewEvent.html", context)
+
+
+def create_new_event_courses(request, id):
+    courses = Course.objects.all()
+    if request.method == "POST":
+        data = request.POST
+        selectedCourses = data.getlist("selectedcourses")
+        for eachcourse in selectedCourses:
+            course = Course.objects.get(id=eachcourse)
+            event = Event.objects.get(id=id)
+            EventCourses.objects.create(event=event, course=course)
+        print(EventCourses.objects.all())
+        return redirect("/create_new_event_courses/" + id)
+    context = {"homeurl": "admin_home", "courses": courses}
+    return render(request, "createNewEventCourses.html", context)
 
 
 def demo(request):

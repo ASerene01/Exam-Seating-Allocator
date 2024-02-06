@@ -69,6 +69,16 @@ class HallColumnSpaceAdmin(admin.ModelAdmin):
     fields = ("hall", "columnAfter")
 
 
+class EventAdmin(admin.ModelAdmin):
+    list_display = ("name", "date", "start_time", "end_time")
+    fields = ("name", "date", "start_time", "end_time")
+
+
+class EventCoursesAdmin(admin.ModelAdmin):
+    list_display = ("event", "course")
+    field = ("event", "course")
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Teacher, TeacherAdmin)
 admin.site.register(Student, StudentAdmin)
@@ -77,3 +87,5 @@ admin.site.register(Course, CourseAdmin)
 admin.site.register(Hall, HallAdmin)
 admin.site.register(Seat, SeatAdmin)
 admin.site.register(HallColumnSpaces, HallColumnSpaceAdmin)
+admin.site.register(Event, EventAdmin)
+admin.site.register(EventCourses, EventCoursesAdmin)

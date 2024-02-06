@@ -1,0 +1,31 @@
+{%extends "base.html"%} {%block start%}
+<div class="container mt-5">
+  <form
+    class="col-6 mx-auto card p-4 shadow-lg forms"
+    method="post"
+    enctype="multipart/form-data"
+  >
+    {% csrf_token %}
+    <h2>Select Courses</h2>
+    <hr />
+    {% if messages %}
+    <div class="alert alert-primary" role="alert">
+      {% for message in messages %} {{message}} {% endfor %}
+    </div>
+    {% endif %} {%for course in courses%}
+    <div class="form-check">
+      <input
+        class="form-check-input"
+        type="checkbox"
+        value="{{course.id}}"
+        id="{{course.id}}"
+        name="selectedcourses"
+      />
+      <label class="form-check-label" for="course.id"> {{course.name}} </label>
+    </div>
+    {%endfor%}
+    <button type="submit" class="btn btn-primary">Next</button>
+  </form>
+</div>
+
+{%endblock%}
