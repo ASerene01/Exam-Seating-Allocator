@@ -70,6 +70,7 @@ urlpatterns = [
     path("view_hall_layout/<id>", viewhalllayout, name="view_hall_layout"),
     path("admin_events_view/", admin_events_view, name="admin_events_view"),
     path("create_new_event/", create_new_event, name="create_new_event"),
+    path("delete_event/<id>", delete_event, name="delete_event"),
     path(
         "create_new_event_courses/<id>",
         create_new_event_courses,

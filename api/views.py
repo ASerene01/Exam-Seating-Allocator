@@ -654,6 +654,18 @@ def create_new_event_halls(request, id):
     return render(request, "createNewEventHalls.html", context)
 
 
+@user_passes_test(is_admin, login_url="login_page")
+def delete_event(request, id):
+    event = Event.objects.get(id=id)
+    deleted = event.delete()
+    if deleted:
+        messages.success(request, "Event " + event.name + " has been deleted")
+
+    else:
+        messages.error(request, "Event was not deleted ")
+    return redirect("admin_events_view")
+
+
 def demo(request):
     context = {"homeurl": "admin_home", "form": EventForm()}
     return render(request, "demo.html", context)

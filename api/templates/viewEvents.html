@@ -3,7 +3,12 @@
   <div class="d-flex justify-content-end">
     <a class="btn register-button btn-lg" href="/create_new_event/">Create a new Event</a>
   </div>
-  
+  <br>
+  {% if messages %}
+    <div class="alert alert-primary mb-3" role="alert">
+      {% for message in messages %} {{message}} {% endfor %}
+    </div>
+    {% endif %} 
   <table class="table mt-5 table-dark">
   <thead>
     <tr>
@@ -26,7 +31,7 @@
       
       <td>
          <a href="/update_course/{{course.id}}" class="btn btn-success m-2">Edit</button>
-        <a href="/delete_course/{{course.id}}" class="btn btn-danger m-2">Delete</button>
+        <a href="/delete_event/{{event.id}}" class="btn btn-danger m-2">Delete</button>
          
       </td>
     </tr>
