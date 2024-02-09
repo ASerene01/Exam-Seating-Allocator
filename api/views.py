@@ -635,10 +635,23 @@ def create_new_event_courses(request, id):
             course = Course.objects.get(id=eachcourse)
             event = Event.objects.get(id=id)
             EventCourses.objects.create(event=event, course=course)
-        print(EventCourses.objects.all())
-        return redirect("/create_new_event_courses/" + id)
+        return redirect("/create_new_event_halls/" + id)
     context = {"homeurl": "admin_home", "courses": courses}
     return render(request, "createNewEventCourses.html", context)
+
+
+def create_new_event_halls(request, id):
+    halls = Hall.objects.all()
+    if request.method == "POST":
+        data = request.POST
+        selectedHalls = data.getlist("selectedhalls")
+        for eachHall in selectedHalls:
+            hall = Hall.objects.get(id=eachHall)
+            event = Event.objects.get(id=id)
+            EventHalls.objects.create(event=event, hall=hall)
+        return redirect("/create_new_event_courses/" + id)
+    context = {"homeurl": "admin_home", "halls": halls}
+    return render(request, "createNewEventHalls.html", context)
 
 
 def demo(request):

@@ -75,6 +75,11 @@ urlpatterns = [
         create_new_event_courses,
         name="create_new_event_courses",
     ),
+    path(
+        "create_new_event_halls/<id>",
+        create_new_event_halls,
+        name="create_new_event_halls",
+    ),
 ]
 
 

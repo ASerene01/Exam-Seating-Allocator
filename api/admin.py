@@ -79,6 +79,11 @@ class EventCoursesAdmin(admin.ModelAdmin):
     field = ("event", "course")
 
 
+class EventHallsAdmin(admin.ModelAdmin):
+    list_display = ("event", "hall")
+    field = ("event", "hall")
+
+
 admin.site.register(User, UserAdmin)
 admin.site.register(Teacher, TeacherAdmin)
 admin.site.register(Student, StudentAdmin)
@@ -89,3 +94,4 @@ admin.site.register(Seat, SeatAdmin)
 admin.site.register(HallColumnSpaces, HallColumnSpaceAdmin)
 admin.site.register(Event, EventAdmin)
 admin.site.register(EventCourses, EventCoursesAdmin)
+admin.site.register(EventHalls, EventHallsAdmin)

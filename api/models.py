@@ -94,7 +94,7 @@ class HallRowSpaces(models.Model):
 
 
 class Event(models.Model):
-    name = models.CharField(max_length=100,blank=True)
+    name = models.CharField(max_length=100, blank=True)
     date = models.DateField()
     start_time = models.TimeField()
     end_time = models.TimeField()
@@ -102,10 +102,19 @@ class Event(models.Model):
 
 class EventCourses(models.Model):
     event = models.ForeignKey(
-        Event, on_delete=models.CASCADE, related_name="event", blank=True
+        Event, on_delete=models.CASCADE, related_name="eventcourse", blank=True
     )
     course = models.ForeignKey(
         Course, on_delete=models.CASCADE, related_name="event", blank=True
+    )
+
+
+class EventHalls(models.Model):
+    event = models.ForeignKey(
+        Event, on_delete=models.CASCADE, related_name="eventhall", blank=True
+    )
+    hall = models.ForeignKey(
+        Hall, on_delete=models.CASCADE, related_name="event", blank=True
     )
 
 
