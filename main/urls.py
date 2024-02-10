@@ -81,6 +81,11 @@ urlpatterns = [
         create_new_event_halls,
         name="create_new_event_halls",
     ),
+    path(
+        "admin_view_event_info/<id>",
+        admin_view_event_info,
+        name="admin_view_event_info",
+    ),
 ]
 
 

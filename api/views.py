@@ -645,11 +645,31 @@ def create_new_event_halls(request, id):
     if request.method == "POST":
         data = request.POST
         selectedHalls = data.getlist("selectedhalls")
+        event = Event.objects.get(id=id)
         for eachHall in selectedHalls:
             hall = Hall.objects.get(id=eachHall)
-            event = Event.objects.get(id=id)
             EventHalls.objects.create(event=event, hall=hall)
-        return redirect("/create_new_event_courses/" + id)
+        event_courses = event.eventcourse.all()
+        event_halls = event.eventhall.all()
+        if event_courses.count() == 1:
+            course = event_courses.first().course
+            students = course.students.all()
+            for each in event_halls:
+                seats = each.hall.seats.all()
+                for student in students:
+                    for seat in seats:
+                        if seat.column % 2 == 0:
+                            check = Allocation.objects.filter(
+                                event=event, seat=seat, student=student
+                            )
+                            if not check.exists():
+                                Allocation.objects.create(
+                                    event=event, seat=seat, student=student
+                                )
+
+                                break
+
+        return redirect("/admin_view_event_info/" + id)
     context = {"homeurl": "admin_home", "halls": halls}
     return render(request, "createNewEventHalls.html", context)
 
@@ -664,6 +684,12 @@ def delete_event(request, id):
     else:
         messages.error(request, "Event was not deleted ")
     return redirect("admin_events_view")
+
+
+@user_passes_test(is_admin, login_url="login_page")
+def admin_view_event_info(request, id):
+
+    return render(request, "adminViewEventInfo.html")
 
 
 def demo(request):

@@ -118,10 +118,13 @@ class EventHalls(models.Model):
     )
 
 
-"""
 class Allocation(models.Model):
-    event
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    course = models.ForeignKey(Course, on_delete=models.CASCADE)
-    seat = models.OneToOneField(Seat, on_delete=models.SET_NULL, null=True, blank=True)
- """
+    event = models.ForeignKey(
+        Event, on_delete=models.CASCADE, related_name="eventallocation", blank=True
+    )
+    student = models.ForeignKey(
+        Student, on_delete=models.CASCADE, related_name="allocationstudent", blank=True
+    )
+    seat = models.ForeignKey(
+        Seat, on_delete=models.CASCADE, related_name="allocationseat", blank=True
+    )
