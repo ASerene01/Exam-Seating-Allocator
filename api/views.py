@@ -109,10 +109,22 @@ def admin_view_profile(request):
     return render(request, "adminViewProfile.html", context)
 
 
-@login_required(login_url="login_page")
 @user_passes_test(is_admin, login_url="login_page")
-def register(request):
+def view_users(request):
+    users = User.objects.all()
+    context = {
+        "homeurl": "admin_home",
+        "users": users,
+        "page_url": "user",
+        "style": "view_users",
+    }
+    return render(request, "viewUsers.html", context)
+
+
+@user_passes_test(is_admin, login_url="login_page")
+def register_user(request):
     if request.method == "POST":
+        print("Hello")
         data = request.POST
         first_name = data.get("firstname")
         last_name = data.get("lastname")
@@ -137,11 +149,11 @@ def register(request):
             request.POST.field1 = {
                 "value": first_name,
             }
-            return redirect("/register/")
+            return redirect("/register_user/")
         useremail = User.objects.filter(email=email)
         if useremail.exists():
             messages.info(request, "Email already registered")
-            return redirect("/register/")
+            return redirect("/register_user/")
         user = User.objects.create(
             first_name=first_name,
             last_name=last_name,
@@ -195,16 +207,16 @@ def register(request):
             teacher_group, created = Group.objects.get_or_create(name="Teachers")
             user.groups.add(teacher_group)
         messages.info(request, "Successfully registered")
-        return redirect("/register/")
+        return redirect("/view_users/")
     querysetcourse = Course.objects.all()
     context = {
-        "style": "register",
-        "jslink": "register",
+        "style": "registeruser",
+        "jslink": "registeruser",
         "Courses": querysetcourse,
         "homeurl": "admin_home",
         "page_url": "user",
     }
-    return render(request, "register.html", context)
+    return render(request, "registerUser.html", context)
 
 
 def logout_page(request):
@@ -248,13 +260,13 @@ def update_user(request, id):
         username_check = exclude_username.filter(username=username)
         if username_check.exists():
             messages.info(request, "Username already registered")
-            return redirect("/register/")
+            return redirect("/update_user/" + str(id))
         userdetails.username = username
         exclude_email = User.objects.exclude(email=userdetails.email)
         email_check = exclude_email.filter(email=email)
         if email_check.exists():
             messages.info(request, "Email already registered")
-            return redirect("/register/")
+            return redirect("/update_user/" + str(id))
         userdetails.email = email
         userdetails.user_type = user_type
         if user_image is not None:
@@ -300,7 +312,7 @@ def update_user(request, id):
             studentdetails.semester = semester
 
             studentdetails.save()
-        return redirect("admin_home")
+        return redirect("view_users")
     context = {
         "homeurl": "admin_home",
         "page_url": "user",
@@ -336,7 +348,7 @@ def deleteuser(request, id):
                 os.remove(file_path)
     queryset.delete()
     messages.info(request, "Successfully Deleted")
-    return redirect("admin_home")
+    return redirect("view_users")
 
 
 @user_passes_test(is_admin, login_url="login_page")
@@ -355,7 +367,7 @@ def view_courses(request):
 def register_course(request):
     if request.method == "POST":
         data = request.POST
-        course = data.get("course")
+        course = data.get("course").lower()
         fieldofstudy = (data.get("fieldofstudy")).lower()
         year = (data.get("year")).lower()
         semester = (data.get("semester")).lower()
@@ -377,7 +389,7 @@ def register_course(request):
             # if student.courses is not courseobject:
 
         messages.info(request, "Course successfully registered")
-        return redirect("/admin_home/")
+        return redirect("/view_courses/")
     queryset = Course.objects.all()
     context = {
         "homeurl": "admin_home",
@@ -392,7 +404,7 @@ def register_course(request):
 def deletecourse(request, id):
     queryset = Course.objects.get(id=id)
     queryset.delete()
-    return redirect("register_course")
+    return redirect("view_courses")
 
 
 @login_required(login_url="login_page")
@@ -666,7 +678,6 @@ def create_new_event_halls(request, id):
                                 Allocation.objects.create(
                                     event=event, seat=seat, student=student
                                 )
-
                                 break
 
         return redirect("/admin_view_event_info/" + id)
@@ -704,3 +715,165 @@ def get_section(numberofstudents, lastsection):
         section = int(lastsection) + 1
         section = str(section)
     return section
+
+
+# To create a database for checking the system
+from faker import Faker
+
+fake = Faker()
+import random
+
+
+URL = "http://127.0.0.1:8000/register_user/"
+
+
+@user_passes_test(is_admin, login_url="login_page")
+def seed_students(request):
+    try:
+        for _ in range(100):
+            first_name = fake.first_name()
+            last_name = fake.last_name()
+            email = fake.unique.email()
+            separator = "@"
+            username = email.split(separator, 1)[0]
+            password = "student"
+            allYear = ["first", "second", "third"]
+            allSemester = ["first", "second"]
+            fieldofstudy = "computing"
+            year = random.choice(allYear)
+            semester = random.choice(allSemester)
+            courses = Course.objects.filter(
+                fieldofstudy=fieldofstudy, year=year, semester=semester
+            )
+            user_image = None
+            if user_image is None:
+                user_image = "Users/default.jpg"
+            user = User.objects.filter(username=username)
+            if user.exists():
+                messages.info(request, "Username already registered")
+                request.POST.field1 = {
+                    "value": first_name,
+                }
+                return redirect("/register_user/")
+            useremail = User.objects.filter(email=email)
+            if useremail.exists():
+                messages.info(request, "Email already registered")
+                return redirect("/register_user/")
+            user = User.objects.create(
+                first_name=first_name,
+                last_name=last_name,
+                username=username,
+                email=email,
+                user_type="student",
+                user_image=user_image,
+            )
+            user.set_password(password)
+            user.save()
+            students = Student.objects.filter(
+                fieldofstudy=fieldofstudy, year=year, semester=semester
+            )
+            allsections = students.values("section").distinct()
+            if allsections.exists():
+                lastsection = allsections.last()["section"]
+                lastsectionstudents = Student.objects.filter(section=lastsection)
+                numberofstudents = lastsectionstudents.count()
+            else:
+                # Handle the case where there are no distinct sections
+                lastsection = 1
+                numberofstudents = 0
+
+                student = Student.objects.create(
+                    user=user,
+                    fieldofstudy=fieldofstudy,
+                    year=year,
+                    semester=semester,
+                    section=get_section(numberofstudents, lastsection),
+                )
+                for course in courses:
+                    student.courses.add(course)
+                # Add the user to a group if needed (e.g., "Teachers" group)
+                student_group, created = Group.objects.get_or_create(name="Students")
+                user.groups.add(student_group)
+
+            messages.info(request, "Successfully registered")
+            return redirect("/view_users/")
+    except Exception as e:
+        print(e)
+    return redirect("view_users")
+
+
+@user_passes_test(is_admin, login_url="login_page")
+def seed_courses(request):
+    try:
+        courses = [
+            ["Logic and Problem Solving", "Computing", "First", "First"],
+            ["Programming", "Computing", "First", "First"],
+            [
+                "Computer Hardware and Software Architectures",
+                "Computing",
+                "First",
+                "First",
+            ],
+            ["Introduction to Information Systems", "Computing", "First", "First"],
+            ["Logic and Problem Solving", "Computing", "First", "Second"],
+            ["Programming", "Computing", "First", "Second"],
+            [
+                "Computer Hardware and Software Architectures",
+                "Computing",
+                "First",
+                "Second",
+            ],
+            ["Fundamentals of Computing", "Computing", "First", "Second"],
+            ["Software Engineering", "Computing", "Second", "First"],
+            ["Databases", "Computing", "Second", "First"],
+            [
+                "Cloud Computing and the Internet of Things",
+                "Computing",
+                "Second",
+                "First",
+            ],
+            ["Network Operating Systems", "Computing", "Second", "First"],
+            ["Smart Data Discovery", "Computing", "Second", "Second"],
+            [
+                "Professional Issues, Ethics and Computer Law",
+                "Computing",
+                "Second",
+                "Second",
+            ],
+            [
+                "Advanced Programming and Technologies",
+                "Computing",
+                "Second",
+                "Second",
+            ],
+            ["Artificial Intelligence", "Computing", "Third", "First"],
+            [
+                "Advanced Database Systems Development",
+                "Computing",
+                "Third",
+                "First",
+            ],
+            ["Application Development", "Computing", "Third", "First"],
+            ["Project", "Computing", "Third", "First"],
+            ["Work Related Learning II", "Computing", "Third", "Second"],
+            ["Project", "Computing", "Third", "Second"],
+            [
+                "Advanced Database Systems Development",
+                "Computing",
+                "Third",
+                "Second",
+            ],
+            ["Application Development", "Computing", "Third", "Second"],
+        ]
+        for each in courses:
+
+            course_create = Course.objects.create(
+                name=each[0],
+                fieldofstudy=each[1],
+                year=each[2],
+                semester=each[3],
+            )
+
+    except Exception as e:
+        print(e)
+    return redirect("view_courses")
