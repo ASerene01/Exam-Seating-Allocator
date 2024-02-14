@@ -1,1 +1,31 @@
-{%extends "base.html"%} {%block start%}Hello {%endblock%}
+{%extends "base.html"%} {%block start%} {% csrf_token %}
+<div class="hall">
+  <div class="screen">Screen</div>
+
+  {%for row_number in hallRows %}
+  
+      <div class="row">
+        {% for hallColumn in hallColumns %}
+         {%for seatNumber in seatNumbers%}
+            {%if seatNumber.row == row_number.rowAfter and seatNumber.column == hallColumn.columnAfter%}
+                
+              <div class="seat{%for allocationSeat in allocationSeats%}{% if seatNumber.row == allocationSeat.row and seatNumber.column == allocationSeat.column and allocationSeat == seatNumber %}deleted{%elif seatNumber.is_deleted%}deleted{% endif %}{%endfor%}">
+                  {{row_number.rowAfter}}{{hallColumn.columnAfter}}
+              </div>
+              {%if hallColumn.is_space == True%}
+              <div class="space">
+              </div>
+              {%endif%}
+            {%endif%}
+          {%endfor%}
+        {% endfor %}
+      </div>
+       {%if row_number.is_space == True%}
+              <div class="space">
+               
+              </div>
+              {%endif%}
+    {% endfor %}
+  </div>
+{%endblock%}
+</div>

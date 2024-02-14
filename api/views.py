@@ -102,6 +102,13 @@ def teacher_home(request):
 @login_required(login_url="login_page")
 @user_passes_test(is_admin, login_url="login_page")
 def admin_view_profile(request):
+    courses = Course.objects.filter(fieldofstudy="Computing", year="First")
+    for course in courses:
+        print(course.name)
+        print(course.fieldofstudy)
+        print(course.year)
+        print(course.semester)
+
     context = {
         "homeurl": "admin_home",
         "style": "admin_home",
@@ -124,7 +131,6 @@ def view_users(request):
 @user_passes_test(is_admin, login_url="login_page")
 def register_user(request):
     if request.method == "POST":
-        print("Hello")
         data = request.POST
         first_name = data.get("firstname")
         last_name = data.get("lastname")
@@ -186,7 +192,7 @@ def register_user(request):
             user.groups.add(rte_group)
 
         elif user_type == "student":
-            # Create a Teacher instance and associate it with the user
+            # Create a Student instance and associate it with the user
             student = Student.objects.create(
                 user=user,
                 fieldofstudy=fieldofstudy,
@@ -652,6 +658,7 @@ def create_new_event_courses(request, id):
     return render(request, "createNewEventCourses.html", context)
 
 
+# After the hall creation allocation will be done in this page
 def create_new_event_halls(request, id):
     halls = Hall.objects.all()
     if request.method == "POST":
@@ -661,25 +668,8 @@ def create_new_event_halls(request, id):
         for eachHall in selectedHalls:
             hall = Hall.objects.get(id=eachHall)
             EventHalls.objects.create(event=event, hall=hall)
-        event_courses = event.eventcourse.all()
-        event_halls = event.eventhall.all()
-        if event_courses.count() == 1:
-            course = event_courses.first().course
-            students = course.students.all()
-            for each in event_halls:
-                seats = each.hall.seats.all()
-                for student in students:
-                    for seat in seats:
-                        if seat.column % 2 == 0:
-                            check = Allocation.objects.filter(
-                                event=event, seat=seat, student=student
-                            )
-                            if not check.exists():
-                                Allocation.objects.create(
-                                    event=event, seat=seat, student=student
-                                )
-                                break
 
+        allocation(id)
         return redirect("/admin_view_event_info/" + id)
     context = {"homeurl": "admin_home", "halls": halls}
     return render(request, "createNewEventHalls.html", context)
@@ -699,8 +689,57 @@ def delete_event(request, id):
 
 @user_passes_test(is_admin, login_url="login_page")
 def admin_view_event_info(request, id):
+    event = Event.objects.get(id=id)
+    event_halls = event.eventhall.all()
+    hall = event_halls.first().hall
+    allocations = event.eventallocation.all()
+    seats = []
+    students = []
+    for allocation in allocations:
+        seats.append(allocation.seat)
+        students.append(allocation.student)
 
-    return render(request, "adminViewEventInfo.html")
+    hallcolumns = hall.columnspaces.all()
+    hallrows = hall.rowspaces.all()
+    seatNumbers = hall.seats.all()
+    context = {
+        "style": "view_hall_layout",
+        "jslink": "view_hall_layout",
+        "homeurl": "admin_home",
+        "seatNumbers": seatNumbers,
+        "hallColumns": hallcolumns,
+        "hallRows": hallrows,
+        "allocationSeats": seats,
+    }
+    return render(request, "adminViewEventInfo.html", context)
+
+
+def allocation(id):
+
+    event = Event.objects.get(id=id)
+    event_courses = event.eventcourse.all()
+    event_halls = event.eventhall.all()
+    if event_courses.count() == 1:
+
+        course = event_courses.first().course
+        students = course.students.all()
+
+        for each in event_halls:
+
+            seats = each.hall.seats.all()
+
+            for student in students:
+
+                for seat in seats:
+                    if seat.column % 2 == 0:
+                        check = Allocation.objects.filter(event=event, seat=seat)
+
+                        if not check.exists():
+                            Allocation.objects.create(
+                                event=event, seat=seat, student=student
+                            )
+
+                            break
 
 
 def demo(request):
@@ -868,10 +907,10 @@ def seed_courses(request):
         for each in courses:
 
             course_create = Course.objects.create(
-                name=each[0],
-                fieldofstudy=each[1],
-                year=each[2],
-                semester=each[3],
+                name=each[0].lower(),
+                fieldofstudy=each[1].lower(),
+                year=each[2].lower(),
+                semester=each[3].lower(),
             )
 
     except Exception as e:
