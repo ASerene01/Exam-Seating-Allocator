@@ -10,8 +10,12 @@
          {%for seatNumber in seatNumbers%}
             {%if seatNumber.row == row_number.rowAfter and seatNumber.column == hallColumn.columnAfter%}
                
-              <div class="seat{%if seatNumber.is_deleted == False%}{%for allocationSeat in allocationSeats%}{% if seatNumber.row == allocationSeat.row and seatNumber.column == allocationSeat.column and allocationSeat == seatNumber %}deleted{% endif %}{%endfor%}{%else%}deleted{%endif%}">
-                  {{row_number.rowAfter}}{{hallColumn.columnAfter}}
+              <div class="seat{%if seatNumber.is_deleted == False%}{%for allocation in allocations%}{% if seatNumber.row == allocation.seat.row and seatNumber.column == allocation.seat.column and allocation.seat == seatNumber %}deleted{% endif %}{%endfor%}{%else%}deleted{%endif%}">
+                  {%if seatNumber.is_deleted == False%}{%for allocation in allocations%}{% if seatNumber.row == allocation.seat.row and seatNumber.column == allocation.seat.column and allocation.seat == seatNumber %}
+                   
+                    <a href="/show_student_allocation_info/{{allocation.id}}"class="btn seatbutton">{{row_number.rowAfter}}{{hallColumn.columnAfter}}</a><br>
+                  {% endif %}{%endfor%}{%endif%}
+                    
               </div>
               {%if hallColumn.is_space == True%}
               <div class="space">

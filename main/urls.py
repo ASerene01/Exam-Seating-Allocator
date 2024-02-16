@@ -89,6 +89,11 @@ urlpatterns = [
     ),
     path("seed_courses/", seed_courses, name="seed_courses"),
     path("seed_students/", seed_students, name="seed_students"),
+    path(
+        "show_student_allocation_info/<id>",
+        show_student_allocation_info,
+        name="show_student_allocation_info",
+    ),
 ]
 
 
