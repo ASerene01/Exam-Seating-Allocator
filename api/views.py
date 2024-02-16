@@ -102,12 +102,6 @@ def teacher_home(request):
 @login_required(login_url="login_page")
 @user_passes_test(is_admin, login_url="login_page")
 def admin_view_profile(request):
-    courses = Course.objects.filter(fieldofstudy="Computing", year="First")
-    for course in courses:
-        print(course.name)
-        print(course.fieldofstudy)
-        print(course.year)
-        print(course.semester)
 
     context = {
         "homeurl": "admin_home",
@@ -668,8 +662,11 @@ def create_new_event_halls(request, id):
         for eachHall in selectedHalls:
             hall = Hall.objects.get(id=eachHall)
             EventHalls.objects.create(event=event, hall=hall)
-
-        allocation(id)
+        eligible = allocation(id)
+        print(eligible)
+        if eligible == False:
+            messages.error(request, "Not enough seats for all students")
+            return redirect("/create_new_event_halls/" + id)
         return redirect("/admin_view_event_info/" + id)
     context = {"homeurl": "admin_home", "halls": halls}
     return render(request, "createNewEventHalls.html", context)
@@ -724,12 +721,22 @@ def allocation(id):
         course = event_courses.first().course
         students = course.students.all()
 
-        for each in event_halls:
+        # Check all the selected halls for eligibility
+        countStudents = students.count()
 
-            seats = each.hall.seats.all()
+        """ if hallCount > 1:
+            hall = event_halls.first().hall
+            seats = hall.seats.filter(is_deleted=False)
+            countSeats = 0
+            for seat in seats:
+                if seat.column % 2 == 0:
+                    countSeats = countSeats + 1
 
+            countSeats = int(seats.count())
+            if countSeats < countStudents:
+                event.eventhall.all().delete()
+                return False
             for student in students:
-
                 for seat in seats:
                     if seat.column % 2 == 0:
                         check = Allocation.objects.filter(event=event, seat=seat)
@@ -740,6 +747,95 @@ def allocation(id):
                             )
 
                             break
+        elif hallCount == 1: """
+        countSeats = 0
+        neededSeats = []
+        for event_hall in event_halls:
+
+            hall = event_hall.hall
+            seats = hall.seats.exclude(is_deleted=True)
+
+            for seat in seats:
+                if seat.column % 2 == 0:
+                    countSeats = countSeats + 1
+            print(countSeats)
+        if countSeats < countStudents:
+            event.eventhall.all().delete()
+            return False
+
+        for event_hall in event_halls:
+            hall = event_hall.hall
+            seats = hall.seats.exclude(is_deleted=True)
+            countSeats = 0
+            for seat in seats:
+                if seat.column % 2 == 0:
+                    countSeats = countSeats + 1
+            lastSeatCheck = 0
+            for student in students:
+                if lastSeatCheck == countSeats:
+                    break
+                for seat in seats:
+                    if seat.column % 2 == 0:
+                        check = Allocation.objects.filter(event=event, seat=seat)
+                        allocated = Allocation.objects.filter(
+                            event=event, student=student
+                        )
+                        if not check.exists() and not allocated.exists():
+                            Allocation.objects.create(
+                                event=event, seat=seat, student=student
+                            )
+                            lastSeatCheck = lastSeatCheck + 1
+                            break
+        return True
+    elif event_courses.count() == 2:
+        countStudents = 0
+        for event_course in event_courses:
+            course = event_course.course
+            students = course.students.all()
+            countStudents = countStudents + students.count()
+        event_halls = event.eventhall.all()
+        hall = event_halls.first().hall
+        countSeats = 0
+        neededSeats = []
+        for event_hall in event_halls:
+
+            hall = event_hall.hall
+            seats = hall.seats.exclude(is_deleted=True)
+
+            for seat in seats:
+                if seat.column % 2 == 0:
+                    countSeats = countSeats + 1
+            print(countSeats)
+        if countSeats < countStudents:
+            event.eventhall.all().delete()
+            return False
+
+        for event_hall in event_halls:
+            hall = event_hall.hall
+            seats = hall.seats.exclude(is_deleted=True)
+            countSeats = 0
+            lastSeatCheck = 0
+            for seat in seats:
+                if seat.column % 2 == 0:
+                    countSeats = countSeats + 1
+            for event_course in event_courses:
+                course = event_course.course
+                students = course.students.all()
+                for student in students:
+                    if lastSeatCheck == countSeats:
+                        break
+                    for seat in seats:
+                        if seat.column % 2 == 0:
+                            check = Allocation.objects.filter(event=event, seat=seat)
+                            allocated = Allocation.objects.filter(
+                                event=event, student=student
+                            )
+                            if not check.exists() and not allocated.exists():
+                                Allocation.objects.create(
+                                    event=event, seat=seat, student=student
+                                )
+                                lastSeatCheck = lastSeatCheck + 1
+                                break
 
 
 def demo(request):
@@ -769,7 +865,7 @@ URL = "http://127.0.0.1:8000/register_user/"
 @user_passes_test(is_admin, login_url="login_page")
 def seed_students(request):
     try:
-        for _ in range(100):
+        for _ in range(20):
             first_name = fake.first_name()
             last_name = fake.last_name()
             email = fake.unique.email()
@@ -779,8 +875,8 @@ def seed_students(request):
             allYear = ["first", "second", "third"]
             allSemester = ["first", "second"]
             fieldofstudy = "computing"
-            year = random.choice(allYear)
-            semester = random.choice(allSemester)
+            year = "first"
+            semester = "first"
             courses = Course.objects.filter(
                 fieldofstudy=fieldofstudy, year=year, semester=semester
             )
@@ -812,10 +908,25 @@ def seed_students(request):
                 fieldofstudy=fieldofstudy, year=year, semester=semester
             )
             allsections = students.values("section").distinct()
+
             if allsections.exists():
                 lastsection = allsections.last()["section"]
                 lastsectionstudents = Student.objects.filter(section=lastsection)
                 numberofstudents = lastsectionstudents.count()
+                student = Student.objects.create(
+                    user=user,
+                    fieldofstudy=fieldofstudy,
+                    year=year,
+                    semester=semester,
+                    section=get_section(numberofstudents, lastsection),
+                )
+
+                for course in courses:
+                    student.courses.add(course)
+
+                # Add the user to a group if needed (e.g., "Teachers" group)
+                student_group, created = Group.objects.get_or_create(name="Students")
+                user.groups.add(student_group)
             else:
                 # Handle the case where there are no distinct sections
                 lastsection = 1
@@ -828,14 +939,15 @@ def seed_students(request):
                     semester=semester,
                     section=get_section(numberofstudents, lastsection),
                 )
+
                 for course in courses:
                     student.courses.add(course)
+
                 # Add the user to a group if needed (e.g., "Teachers" group)
                 student_group, created = Group.objects.get_or_create(name="Students")
                 user.groups.add(student_group)
 
             messages.info(request, "Successfully registered")
-            return redirect("/view_users/")
     except Exception as e:
         print(e)
     return redirect("view_users")

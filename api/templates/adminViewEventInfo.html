@@ -2,14 +2,15 @@
 <div class="hall">
   <div class="screen">Screen</div>
 
+
   {%for row_number in hallRows %}
   
       <div class="row">
         {% for hallColumn in hallColumns %}
          {%for seatNumber in seatNumbers%}
             {%if seatNumber.row == row_number.rowAfter and seatNumber.column == hallColumn.columnAfter%}
-                
-              <div class="seat{%for allocationSeat in allocationSeats%}{% if seatNumber.row == allocationSeat.row and seatNumber.column == allocationSeat.column and allocationSeat == seatNumber %}deleted{%elif seatNumber.is_deleted%}deleted{% endif %}{%endfor%}">
+               
+              <div class="seat{%if seatNumber.is_deleted == False%}{%for allocationSeat in allocationSeats%}{% if seatNumber.row == allocationSeat.row and seatNumber.column == allocationSeat.column and allocationSeat == seatNumber %}deleted{% endif %}{%endfor%}{%else%}deleted{%endif%}">
                   {{row_number.rowAfter}}{{hallColumn.columnAfter}}
               </div>
               {%if hallColumn.is_space == True%}
