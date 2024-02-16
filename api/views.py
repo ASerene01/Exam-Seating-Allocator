@@ -807,7 +807,7 @@ def allocation(id):
             countStudents = countStudents + students.count()
         event_halls = event.eventhall.all()
         firstCourse = event_courses.first().course
-        secondCourse = event_courses.all()[1]
+        secondCourse = event_courses.all()[1].course
         countSeats = 0
 
         for event_hall in event_halls:
@@ -844,6 +844,7 @@ def allocation(id):
                             )
                             break
                         is_last_seat = seat == seats.last()
+            is_last_seat_second = False
             for secondCourseStudent in secondCourseStudents:
                 if is_last_seat_second:
                     break
