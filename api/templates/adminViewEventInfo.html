@@ -1,4 +1,45 @@
 {%extends "base.html"%} {%block start%} {% csrf_token %}
+<div class="container mt-4">
+    <div class="row">
+      <div class="col-md-6 offset-md-3">
+ <form
+    class="d-flex"
+    method="post"
+    enctype="multipart/form-data"
+  >
+    {% csrf_token %}
+    {% if messages %}
+    <div class="alert alert-primary" role="alert">
+      {% for message in messages %} {{message}} {% endfor %}
+    </div>
+
+    {% endif %}
+        
+          <select
+            name="selectedHall"
+            id="selectedHall"
+            class="form-select bg-dark text-white me-4"
+            aria-label="Halls"
+            style="width: 30%"
+          >
+          {%for hall in allHalls%}
+              {%if hall == currentHall%}
+                <option selected disabled>{{hall.name}}</option>
+              {%else%}
+                <option value="{{hall.id}}">{{hall.name}}</option>
+              {%endif%}
+          {%endfor%}
+          
+          </select>
+        
+      <button class="btn btn-outline-primary" type="submit">Change</button>
+    </div>
+
+    
+  </form>
+</div>
+</div>
+</div>
 <div class="hall">
   <div class="screen">Screen</div>
 
