@@ -14,7 +14,7 @@
     </div>
 
     {% endif %}
-        
+        {%if not user.user_type == 'student'%}
           <select
             name="selectedHall"
             id="selectedHall"
@@ -33,6 +33,7 @@
           </select>
         
       <button class="btn btn-outline-primary" type="submit">Change</button>
+      {%endif%}
     </div>
 
     
@@ -53,9 +54,13 @@
                
               <div class="seat{%if seatNumber.is_deleted == False%}{%for allocation in allocations%}{% if seatNumber.row == allocation.seat.row and seatNumber.column == allocation.seat.column and allocation.seat == seatNumber %}deleted{% endif %}{%endfor%}{%else%}deleted{%endif%}">
                   {%if seatNumber.is_deleted == False%}{%for allocation in allocations%}{% if seatNumber.row == allocation.seat.row and seatNumber.column == allocation.seat.column and allocation.seat == seatNumber %}
-                   
+                    {%if not user.user_type == 'student'%}
                     <a href="/show_student_allocation_info/{{allocation.id}}"class="btn seatbutton">{{row_number.rowAfter}}{{hallColumn.columnAfter}}</a><br>
+                    {%else%}
+                   
+                    {%endif%}
                   {% endif %}{%endfor%}{%endif%}
+                   {{row_number.rowAfter}}{{hallColumn.columnAfter}}
                     
               </div>
               {%if hallColumn.is_space == True%}

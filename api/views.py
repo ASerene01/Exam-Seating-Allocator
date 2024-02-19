@@ -610,10 +610,23 @@ def removerowspacefromhall(request, id):
 from .forms import EventForm
 
 
+@user_passes_test(is_admin, login_url="login_page")
 def admin_events_view(request):
     events = Event.objects.all()
     context = {"homeurl": "admin_home", "events": events}
     return render(request, "viewEvents.html", context)
+
+
+@user_passes_test(is_student, login_url="login_page")
+def student_events_view(request):
+    user = request.user
+    student = user.student
+    allocations = Allocation.objects.filter(student=student)
+    events = [allocation.event for allocation in allocations]
+    courses = student.courses.all()
+
+    context = {"homeurl": "admin_home", "events": events, "courses": courses}
+    return render(request, "viewEventsStudent.html", context)
 
 
 def create_new_event(request):
@@ -669,7 +682,7 @@ def create_new_event_halls(request, id):
         if eligible == False:
             messages.error(request, "Not enough seats for all students")
             return redirect("/create_new_event_halls/" + id)
-        return redirect("/admin_view_event_info/" + id)
+        return redirect("/view_seat_allocations/" + id)
     context = {"homeurl": "admin_home", "halls": halls}
     return render(request, "createNewEventHalls.html", context)
 
@@ -687,7 +700,7 @@ def delete_event(request, id):
 
 
 @user_passes_test(is_admin, login_url="login_page")
-def admin_view_event_info(request, id):
+def view_seat_allocations(request, id):
     event = Event.objects.get(id=id)
     event_halls = event.eventhall.all()
     allHalls = [event_hall.hall for event_hall in event_halls]
@@ -716,7 +729,7 @@ def admin_view_event_info(request, id):
         "currentHall": hall,
         "allHalls": allHalls,
     }
-    return render(request, "adminViewEventInfo.html", context)
+    return render(request, "viewSeatAllocations.html", context)
 
 
 def show_student_allocation_info(request, id):
@@ -732,6 +745,33 @@ def show_student_allocation_info(request, id):
         "courses": courses,
     }
     return render(request, "viewStudentAllocationInfo.html", context)
+
+
+@user_passes_test(is_student, login_url="login_page")
+def view_seat_allocations_student(request, id):
+    currentuser = request.user
+    student = currentuser.student
+    event = Event.objects.get(id=id)
+    event_halls = event.eventhall.all()
+    allHalls = [event_hall.hall for event_hall in event_halls]
+    hall = event_halls.first().hall
+    allocations = Allocation.objects.filter(event=event, student=student)
+
+    hallcolumns = hall.columnspaces.all()
+    hallrows = hall.rowspaces.all()
+    seatNumbers = hall.seats.all()
+    context = {
+        "style": "view_hall_layout",
+        "jslink": "view_hall_layout",
+        "homeurl": "student_home",
+        "seatNumbers": seatNumbers,
+        "hallColumns": hallcolumns,
+        "hallRows": hallrows,
+        "allocations": allocations,
+        "currentHall": hall,
+        "allHalls": allHalls,
+    }
+    return render(request, "viewSeatAllocations.html", context)
 
 
 def allocation(id):
@@ -832,7 +872,7 @@ def allocation(id):
         hall = event_hall.hall
 
         seats = hall.seats.exclude(is_deleted=True)
-        firstCourseStudents = firstCourse.students.all()
+        firstCourseStudents = firstCourse.students.all().order_by("?")
         if firstCourse is not None and secondCourse is None and thirdCourse is None:
 
             for firstCourseStudent in firstCourseStudents:
@@ -853,7 +893,7 @@ def allocation(id):
             firstCourse is not None and secondCourse is not None and thirdCourse is None
         ):
 
-            secondCourseStudents = secondCourse.students.all()
+            secondCourseStudents = secondCourse.students.all().order_by("?")
 
             for firstCourseStudent in firstCourseStudents:
 
@@ -889,8 +929,8 @@ def allocation(id):
             and thirdCourse is not None
         ):
 
-            secondCourseStudents = secondCourse.students.all()
-            thirdCourseStudents = thirdCourse.students.all()
+            secondCourseStudents = secondCourse.students.all().order_by("?")
+            thirdCourseStudents = thirdCourse.students.all().order_by("?")
 
             for firstCourseStudent in firstCourseStudents:
 

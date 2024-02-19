@@ -83,9 +83,9 @@ urlpatterns = [
         name="create_new_event_halls",
     ),
     path(
-        "admin_view_event_info/<id>",
-        admin_view_event_info,
-        name="admin_view_event_info",
+        "view_seat_allocations/<id>",
+        view_seat_allocations,
+        name="view_seat_allocations",
     ),
     path("seed_courses/", seed_courses, name="seed_courses"),
     path("seed_students/", seed_students, name="seed_students"),
@@ -93,6 +93,12 @@ urlpatterns = [
         "show_student_allocation_info/<id>",
         show_student_allocation_info,
         name="show_student_allocation_info",
+    ),
+    path("student_events_view/", student_events_view, name="student_events_view"),
+    path(
+        "view_seat_allocations_student/<id>",
+        view_seat_allocations_student,
+        name="view_seat_allocations_student",
     ),
 ]
 
