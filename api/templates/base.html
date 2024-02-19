@@ -61,11 +61,10 @@
         {%endif%}" class="navbar-brand" style="color:lightblue">Exam Seating Allocator</a>
         <form class="d-flex" role="search">
           {%if request.user.is_authenticated%}
-            {%if user.user_type == "admin"%}
-              <a class="nav-link" href="/admin_view_profile/" >
+              <a class="nav-link" href="/{{homeurl}}/" >
                   <img src="/media/{{user.user_image}}" alt="Profile Picture" class = "navProfile" >
               </a>
-            {%endif%}
+            
           <a href="/logout/" class="btn" style="background:#4044ED; color:white;" type="submit">Logout</a>
           {%endif%}
         </form>

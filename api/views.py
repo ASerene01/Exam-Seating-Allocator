@@ -40,9 +40,10 @@ def login_page(request):
         if request.method == "POST":
             username = request.POST.get("username")
             password = request.POST.get("password")
-
+            if username.find("@") != -1:
+                username = User.objects.get(email=username.lower()).username
             if not User.objects.filter(username=username).exists():
-                messages.error(request, "Invalid Username")
+                messages.error(request, "Invalid Username or Email")
                 return redirect("login_page")
             user = authenticate(request, username=username, password=password)
             if user is not None:
@@ -112,7 +113,8 @@ def admin_view_profile(request):
 
 @user_passes_test(is_admin, login_url="login_page")
 def view_users(request):
-    users = User.objects.all()
+    currentuser = request.user
+    users = User.objects.exclude(id=currentuser.id)
     context = {
         "homeurl": "admin_home",
         "users": users,
@@ -742,7 +744,6 @@ def allocation(id):
     thirdCourse = event_courses.all()[2].course if event_courses.count() > 2 else None
     countStudents = 0
 
-    event_halls = event.eventhall.all()
     countSeats = 0
     if thirdCourse is None:
         if firstCourse is not None:
