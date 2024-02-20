@@ -100,6 +100,12 @@ urlpatterns = [
         view_seat_allocations_student,
         name="view_seat_allocations_student",
     ),
+    path("teacher_events_view/", teacher_events_view, name="teacher_events_view"),
+    path(
+        "view_seat_allocations_teacher/<id>",
+        view_seat_allocations_teacher,
+        name="view_seat_allocations_teacher",
+    ),
 ]
 
 

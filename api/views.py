@@ -4,8 +4,6 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
 from django.conf import settings
 import os
-
-User = get_user_model()
 from django.shortcuts import render, redirect
 from .models import *
 from django.contrib.auth.decorators import login_required
@@ -61,7 +59,6 @@ def login_page(request):
     return render(request, "login.html", context)
 
 
-@login_required(login_url="login_page")
 @user_passes_test(is_admin, login_url="login_page")
 def admin_home(request):
     current_user = request.user
@@ -74,7 +71,6 @@ def admin_home(request):
     return render(request, "adminHome.html", context)
 
 
-@login_required(login_url="login_page")
 @user_passes_test(is_student, login_url="login_page")
 def student_home(request):
     user = request.user
@@ -617,6 +613,13 @@ def admin_events_view(request):
     return render(request, "viewEvents.html", context)
 
 
+@user_passes_test(is_teacher, login_url="login_page")
+def teacher_events_view(request):
+    events = Event.objects.all()
+    context = {"homeurl": "teacher_home", "events": events}
+    return render(request, "viewEvents.html", context)
+
+
 @user_passes_test(is_student, login_url="login_page")
 def student_events_view(request):
     user = request.user
@@ -719,8 +722,8 @@ def view_seat_allocations(request, id):
     hallrows = hall.rowspaces.all()
     seatNumbers = hall.seats.all()
     context = {
-        "style": "view_hall_layout",
-        "jslink": "view_hall_layout",
+        "style": "view_seat_allocations",
+        "jslink": "view_seat_allocations",
         "homeurl": "admin_home",
         "seatNumbers": seatNumbers,
         "hallColumns": hallcolumns,
@@ -732,8 +735,41 @@ def view_seat_allocations(request, id):
     return render(request, "viewSeatAllocations.html", context)
 
 
-def show_student_allocation_info(request, id):
+@user_passes_test(is_teacher, login_url="login_page")
+def view_seat_allocations_teacher(request, id):
+    event = Event.objects.get(id=id)
+    event_halls = event.eventhall.all()
+    allHalls = [event_hall.hall for event_hall in event_halls]
+    hall = event_halls.first().hall
+    allocations = event.eventallocation.all()
+    if request.method == "POST":
+        data = request.POST
+        selectedHall = int(data.get("selectedHall"))
 
+        for event_hall in event_halls:
+
+            if event_hall.hall.id == selectedHall:
+                hall = event_hall.hall
+                break
+    hallcolumns = hall.columnspaces.all()
+    hallrows = hall.rowspaces.all()
+    seatNumbers = hall.seats.all()
+    context = {
+        "style": "view_seat_allocations",
+        "jslink": "view_seat_allocations",
+        "homeurl": "teacher_home",
+        "seatNumbers": seatNumbers,
+        "hallColumns": hallcolumns,
+        "hallRows": hallrows,
+        "allocations": allocations,
+        "currentHall": hall,
+        "allHalls": allHalls,
+    }
+    return render(request, "viewSeatAllocations.html", context)
+
+
+@user_passes_test(is_teacher or is_admin, login_url="login_page")
+def show_student_allocation_info(request, id):
     allocation = Allocation.objects.get(id=id)
     student_info = allocation.student
     user_info = student_info.user

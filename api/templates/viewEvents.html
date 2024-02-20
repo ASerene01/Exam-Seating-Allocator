@@ -1,9 +1,11 @@
 {%extends "base.html"%} {%block start%} {% csrf_token %}
 <div class="container mt-5">
+  {%if not user.user_type == "teacher"%}
   <div class="d-flex justify-content-end">
     <a class="btn register-button btn-lg" href="/create_new_event/">Create a new Event</a>
   </div>
   <br>
+  {%endif%}
   {% if messages %}
     <div class="alert alert-primary mb-3" role="alert">
       {% for message in messages %} {{message}} {% endfor %}
@@ -30,9 +32,11 @@
       <td>{{event.end_time}}</td>
       
       <td>
+        {%if not user.user_type == "teacher"%}
          <a href="/update_course/{{course.id}}" class="btn btn-success m-2">Edit</button>
         <a href="/delete_event/{{event.id}}" class="btn btn-danger m-2" onclick="return confirm('Are you sure you want to delete this event?');">Delete</button>
-          <a href="/view_seat_allocations/{{event.id}}" class="btn btn-success m-2">View Allocations</button>
+          {%endif%}
+          <a href="/view_seat_allocations{%if user.user_type == "teacher"%}_teacher{%endif%}/{{event.id}}" class="btn btn-success m-2">View Allocations</button>
          
       </td>
     </tr>
