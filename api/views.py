@@ -691,10 +691,11 @@ def create_new_event_courses(request, id):
 # After the hall creation allocation will be done in this page
 def create_new_event_halls(request, id):
     halls = Hall.objects.all()
+    event = Event.objects.get(id=id)
     if request.method == "POST":
         data = request.POST
         selectedHalls = data.getlist("selectedhalls")
-        event = Event.objects.get(id=id)
+
         for eachHall in selectedHalls:
             hall = Hall.objects.get(id=eachHall)
             EventHalls.objects.create(event=event, hall=hall)

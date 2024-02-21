@@ -1,7 +1,7 @@
 {%extends "base.html"%} {%block start%}
 <div class="container mt-5">
   <form
-    class="col-6 mx-auto card p-4 shadow-lg forms"
+    class="mx-auto card p-4 shadow-lg forms d-flex justify-content-between align-items-center"
     method="post"
     enctype="multipart/form-data"
   >
@@ -12,18 +12,39 @@
     <div class="alert alert-primary" role="alert">
       {% for message in messages %} {{message}} {% endfor %}
     </div>
-    {% endif %} {%for hall in halls%}
-    <div class="form-check">
-      <input
-        class="form-check-input"
-        type="checkbox"
-        value="{{hall.id}}"
-        id="{{hall.id}}"
-        name="selectedhalls"
-      />
-      <label class="form-check-label" for="hall.id"> {{hall.name}} </label>
+    {% endif %}
+
+    <div class="row">
+      {%for hall in halls%}
+      <div class="col-md-4 mt-5">
+        <div class="card mb-3">
+          <div
+            class="card-header d-flex justify-content-between align-items-center"
+          >
+            <h5 class="card-title">{{hall.name |capfirst}}</h5>
+            <input
+              class="card-title"
+              type="checkbox"
+              value="{{hall.id}}"
+              id="{{hall.id}}"
+              name="selectedhalls"
+              style="transform: scale(1.5)"
+            />
+          </div>
+          <!-- prettier-ignore -->
+          <div class="card-body mb-3">
+              <h6><span>Rows:</span> {{ hall.rows }}</h6> 
+            
+            <h6><span>Columns:</span> {{ hall.columns }}</h6> 
+            <hr>
+            <h6><span>Total Seats:</span> {{ hall.noOfSeats}}</h6> 
+            <hr>
+          </div>
+        </div>
+      </div>
+      {%endfor%}
     </div>
-    {%endfor%}
+
     <button type="submit" class="btn btn-primary">Next</button>
   </form>
 </div>
