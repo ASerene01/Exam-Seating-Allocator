@@ -1,9 +1,31 @@
 {%extends "base.html"%} {%block start%}
+<form
+  class="d-flex justify-content-center m-2"
+  method="post"
+  enctype="multipart/form-data"
+  id="FieldofStudy"
+>
+  {% csrf_token %}
+  <select
+    name="selectedStudy"
+    id="selectedStudy"
+    class="form-select bg-dark text-white me-5"
+    aria-label="FieldofStudy"
+    style="width: 20%"
+  >
+    {%for field in fields%} {%if field == currentfield%}
+    <option selected disabled>{{field |capfirst}}</option>
+    {%else%}
+    <option value="{{field}}">{{field|capfirst}}</option>
+    {%endif%} {%endfor%}
+  </select>
+</form>
 <div class="container mt-5">
   <form
-    class="col-6 mx-auto card p-4 shadow-lg forms"
+    class="mx-auto p-4 shadow-lg forms"
     method="post"
     enctype="multipart/form-data"
+    onsubmit="return validateForm()"
   >
     {% csrf_token %}
     <h2>Select Courses</h2>
@@ -12,19 +34,54 @@
     <div class="alert alert-primary" role="alert">
       {% for message in messages %} {{message}} {% endfor %}
     </div>
-    {% endif %} {%for course in courses%}
-    <div class="form-check">
-      <input
-        class="form-check-input"
-        type="checkbox"
-        value="{{course.id}}"
-        id="{{course.id}}"
-        name="selectedcourses"
-      />
-      <label class="form-check-label" for="course.id"> {{course.name}} </label>
+    {% endif %}
+    <div class="row">
+      {%for year in years%}
+      <div class="col-md-4 mt-5">
+        <div class="card mb-2">
+          <div class="card-header">
+            <h5 class="card-title">{{year |capfirst}} Year</h5>
+          </div>
+        </div>
+        {%for semester in semesters%}
+        <div class="card mb-3">
+          <div class="card-header">
+            <h5 class="card-title">{{semester |capfirst}} Semester</h5>
+          </div>
+          <!-- prettier-ignore -->
+          <div class="card-body mb-3">
+            {%for course in courses%} 
+            {%if course.year == year and course.semester == semester%}
+           
+            <h6 class="card-subtitle mb-2 text-muted"> 
+              <input type="hidden" id="{{ course.id }}_year" value="{{ course.year }}">
+              <input type="hidden" id="{{ course.id }}_semester" value="{{ course.semester }}">
+              <input
+              class="card-subtitle mb-2 text-muted"
+              type="checkbox"
+              value="{{course.id}}"
+              id="{{course.id}}"
+              name="selectedcourses"
+              onclick="handleCheckboxClick(this)"
+              /> 
+              {{course.name |capfirst}}
+            </h6>
+            {%endif%} {%endfor%}
+          </div>
+        </div>
+        {%endfor%}
+      </div>
+      {%endfor%}
     </div>
-    {%endfor%}
-    <button type="submit" class="btn btn-primary">Next</button>
+
+    <button
+      type="submit"
+      name="SelectedCourseSubmit"
+      value="SelectedCourseSubmit"
+      class="btn btn-primary"
+    >
+      Next
+    </button>
   </form>
 </div>
 

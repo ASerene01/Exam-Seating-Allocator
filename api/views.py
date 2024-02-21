@@ -364,6 +364,7 @@ def view_courses(request):
 @user_passes_test(is_admin, login_url="login_page")
 def register_course(request):
     if request.method == "POST":
+
         data = request.POST
         course = data.get("course").lower()
         fieldofstudy = (data.get("fieldofstudy")).lower()
@@ -657,16 +658,33 @@ def create_new_event(request):
 
 
 def create_new_event_courses(request, id):
-    courses = Course.objects.all()
+    courses = Course.objects.filter(fieldofstudy="computing")
+    fields = ["computing", "multimedia", "networking"]
+    currentfield = "computing"
+
     if request.method == "POST":
         data = request.POST
-        selectedCourses = data.getlist("selectedcourses")
-        for eachcourse in selectedCourses:
-            course = Course.objects.get(id=eachcourse)
-            event = Event.objects.get(id=id)
-            EventCourses.objects.create(event=event, course=course)
-        return redirect("/create_new_event_halls/" + id)
-    context = {"homeurl": "admin_home", "courses": courses}
+        if data.get("SelectedCourseSubmit") == "SelectedCourseSubmit":
+            selectedCourses = data.getlist("selectedcourses")
+            for eachcourse in selectedCourses:
+                course = Course.objects.get(id=eachcourse)
+                event = Event.objects.get(id=id)
+                EventCourses.objects.create(event=event, course=course)
+            return redirect("/create_new_event_halls/" + id)
+        else:
+            currentfield = data.get("selectedStudy")
+            courses = Course.objects.filter(fieldofstudy=currentfield)
+    allYears = courses.values_list("year", flat=True).distinct()
+    allSemesters = courses.values_list("semester", flat=True).distinct()
+    context = {
+        "jslink": "create_new_event_courses",
+        "homeurl": "admin_home",
+        "courses": courses,
+        "years": allYears,
+        "semesters": allSemesters,
+        "fields": fields,
+        "currentfield": currentfield,
+    }
     return render(request, "createNewEventCourses.html", context)
 
 
