@@ -121,6 +121,28 @@ def view_users(request):
 
 
 @user_passes_test(is_admin, login_url="login_page")
+def view_user_info(request, id):
+    user_info = User.objects.get(id=id)
+
+    if user_info.user_type == "student":
+        student_info = user_info.student
+        courses = student_info.courses.all()
+    else:
+        student_info = None
+        courses = None
+
+    context = {
+        "homeurl": "admin_home",
+        "student_info": student_info,
+        "user_info": user_info,
+        "courses": courses,
+        "page_url": "user",
+        "style": "view_users",
+    }
+    return render(request, "viewUserInfo.html", context)
+
+
+@user_passes_test(is_admin, login_url="login_page")
 def register_user(request):
     if request.method == "POST":
         data = request.POST
@@ -787,8 +809,8 @@ def view_seat_allocations_teacher(request, id):
     return render(request, "viewSeatAllocations.html", context)
 
 
-@user_passes_test(is_teacher or is_admin, login_url="login_page")
-def show_student_allocation_info(request, id):
+@user_passes_test(is_admin, login_url="login_page")
+def show_student_info(request, id):
     allocation = Allocation.objects.get(id=id)
     student_info = allocation.student
     user_info = student_info.user
@@ -799,7 +821,22 @@ def show_student_allocation_info(request, id):
         "user_info": user_info,
         "courses": courses,
     }
-    return render(request, "viewStudentAllocationInfo.html", context)
+    return render(request, "viewUserInfo.html", context)
+
+
+@user_passes_test(is_teacher, login_url="login_page")
+def show_student_info_teacher(request, id):
+    allocation = Allocation.objects.get(id=id)
+    student_info = allocation.student
+    user_info = student_info.user
+    courses = student_info.courses.all()
+    context = {
+        "homeurl": "admin_home",
+        "student_info": student_info,
+        "user_info": user_info,
+        "courses": courses,
+    }
+    return render(request, "viewUserInfo.html", context)
 
 
 @user_passes_test(is_student, login_url="login_page")

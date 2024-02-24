@@ -31,6 +31,7 @@ urlpatterns = [
     path("teacher_home/", teacher_home, name="teacher_home"),
     path("admin_view_profile/", admin_view_profile, name="admin_view_profile"),
     path("view_users/", view_users, name="view_users"),
+    path("view_user_info/<id>", view_user_info, name="view_user_info"),
     path("register_user/", register_user, name="register_user"),
     path("update_user/<id>", update_user, name="update_user"),
     path("delete_user/<id>", deleteuser, name="delete_user"),
@@ -90,9 +91,14 @@ urlpatterns = [
     path("seed_courses/", seed_courses, name="seed_courses"),
     path("seed_students/", seed_students, name="seed_students"),
     path(
-        "show_student_allocation_info/<id>",
-        show_student_allocation_info,
-        name="show_student_allocation_info",
+        "show_student_info/<id>",
+        show_student_info,
+        name="show_student_info",
+    ),
+    path(
+        "show_student_info_teacher/<id>",
+        show_student_info_teacher,
+        name="show_student_info_teacher",
     ),
     path("student_events_view/", student_events_view, name="student_events_view"),
     path(
