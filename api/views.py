@@ -485,7 +485,18 @@ def updatecourse(request, id):
     return render(request, "courseUpdate.html", context)
 
 
-@login_required(login_url="login_page")
+@user_passes_test(is_admin, login_url="login_page")
+def view_halls(request):
+    halls = Hall.objects.all()
+    context = {
+        "homeurl": "admin_home",
+        "halls": halls,
+        "page_url": "hall",
+        "style": "view_courses",
+    }
+    return render(request, "viewHalls.html", context)
+
+
 @user_passes_test(is_admin, login_url="login_page")
 def registerhall(request):
     hallAll = Hall.objects.all()

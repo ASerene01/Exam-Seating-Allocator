@@ -40,6 +40,7 @@ urlpatterns = [
     path("register_course/", register_course, name="register_course"),
     path("delete_course/<id>", deletecourse, name="delete_course"),
     path("update_course/<id>", updatecourse, name="update_course"),
+    path("view_halls/", view_halls, name="view_halls"),
     path("register_hall/", registerhall, name="register_hall"),
     path("delete_hall/<id>", deletehall, name="delete_hall"),
     path("edit_hall_layout/<name>", edithalllayout, name="edit_hall_layout"),
