@@ -789,6 +789,7 @@ def create_new_event_courses(request, id):
 
 
 # After the hall creation allocation will be done in this page
+@user_passes_test(is_admin, login_url="login_page")
 def create_new_event_halls(request, id):
     halls = Hall.objects.all()
     event = Event.objects.get(id=id)
@@ -807,6 +808,20 @@ def create_new_event_halls(request, id):
         return redirect("/view_seat_allocations/" + id)
     context = {"homeurl": "admin_home", "halls": halls}
     return render(request, "createNewEventHalls.html", context)
+
+
+@user_passes_test(is_admin, login_url="login_page")
+def regenerate_allocations(request, id):
+    event = Event.objects.get(id=id)
+    allocations = event.eventallocation.all()
+    allocations.delete()
+    eligible = allocation(id)
+
+    if eligible == False:
+        messages.error(request, "Not enough seats for all students")
+        return redirect("/create_new_event_halls/" + id)
+    return redirect("/view_seat_allocations/" + id)
+    context = {"homeurl": "admin_home", "halls": halls}
 
 
 @user_passes_test(is_admin, login_url="login_page")
@@ -953,7 +968,7 @@ def allocation(id):
     secondCourse = event_courses.all()[1].course if event_courses.count() > 1 else None
     thirdCourse = event_courses.all()[2].course if event_courses.count() > 2 else None
     countStudents = 0
-
+    
     countSeats = 0
     if thirdCourse is None:
         if firstCourse is not None:

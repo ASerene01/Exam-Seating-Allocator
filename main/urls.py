@@ -85,6 +85,11 @@ urlpatterns = [
         name="create_new_event_halls",
     ),
     path(
+        "regenerate_allocations/<id>",
+        regenerate_allocations,
+        name="regenerate_allocations",
+    ),
+    path(
         "view_seat_allocations/<id>",
         view_seat_allocations,
         name="view_seat_allocations",
