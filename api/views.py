@@ -758,22 +758,18 @@ def create_new_event(request):
 
 
 def create_new_event_courses(request, id):
-    courses = Course.objects.filter(fieldofstudy="computing")
+    courses = Course.objects.all()
     fields = ["computing", "multimedia", "networking"]
     currentfield = "computing"
 
     if request.method == "POST":
         data = request.POST
-        if data.get("SelectedCourseSubmit") == "SelectedCourseSubmit":
-            selectedCourses = data.getlist("selectedcourses")
-            for eachcourse in selectedCourses:
-                course = Course.objects.get(id=eachcourse)
-                event = Event.objects.get(id=id)
-                EventCourses.objects.create(event=event, course=course)
-            return redirect("/create_new_event_halls/" + id)
-        else:
-            currentfield = data.get("selectedStudy")
-            courses = Course.objects.filter(fieldofstudy=currentfield)
+        selectedCourses = data.getlist("selectedcourses")
+        for eachcourse in selectedCourses:
+            course = Course.objects.get(id=eachcourse)
+            event = Event.objects.get(id=id)
+            EventCourses.objects.create(event=event, course=course)
+        return redirect("/create_new_event_halls/" + id)
     allYears = courses.values_list("year", flat=True).distinct()
     allSemesters = courses.values_list("semester", flat=True).distinct()
     context = {
@@ -968,7 +964,7 @@ def allocation(id):
     secondCourse = event_courses.all()[1].course if event_courses.count() > 1 else None
     thirdCourse = event_courses.all()[2].course if event_courses.count() > 2 else None
     countStudents = 0
-    
+
     countSeats = 0
     if thirdCourse is None:
         if firstCourse is not None:
@@ -1170,139 +1166,6 @@ def allocation(id):
                             )
                             break
 
-    """ if event_courses.count() == 1:
-
-        course = event_courses.first().course
-        students = course.students.all()
-
-        # Check all the selected halls for eligibility
-        countStudents = students.count()
-
-        if hallCount > 1:
-            hall = event_halls.first().hall
-            seats = hall.seats.filter(is_deleted=False)
-            countSeats = 0
-            for seat in seats:
-                if seat.column % 2 == 0:
-                    countSeats = countSeats + 1
-
-            countSeats = int(seats.count())
-            if countSeats < countStudents:
-                event.eventhall.all().delete()
-                return False
-            for student in students:
-                for seat in seats:
-                    if seat.column % 2 == 0:
-                        check = Allocation.objects.filter(event=event, seat=seat)
-
-                        if not check.exists():
-                            Allocation.objects.create(
-                                event=event, seat=seat, student=student
-                            )
-
-                            break
-        elif hallCount == 1: 
-        countSeats = 0
-
-        for event_hall in event_halls:
-
-            hall = event_hall.hall
-            seats = hall.seats.exclude(is_deleted=True)
-
-            for seat in seats:
-                if seat.column % 2 == 0:
-                    countSeats = countSeats + 1
-        if countSeats < countStudents:
-            event.eventhall.all().delete()
-            return False
-
-        for event_hall in event_halls:
-            hall = event_hall.hall
-            seats = hall.seats.exclude(is_deleted=True)
-            countSeats = 0
-            for seat in seats:
-                if seat.column % 2 == 0:
-                    countSeats = countSeats + 1
-            lastSeatCheck = 0
-            for student in students:
-                if lastSeatCheck == countSeats:
-                    break
-                for seat in seats:
-                    if seat.column % 2 == 0:
-                        check = Allocation.objects.filter(event=event, seat=seat)
-                        allocated = Allocation.objects.filter(
-                            event=event, student=student
-                        )
-                        if not check.exists() and not allocated.exists():
-                            allocation = Allocation.objects.create(
-                                event=event, seat=seat, student=student
-                            )
-                            print(allocation.id)
-                            lastSeatCheck = lastSeatCheck + 1
-                            break
-        return True
-    elif event_courses.count() == 2:
-        countStudents = 0
-        for event_course in event_courses:
-            course = event_course.course
-            students = course.students.all()
-            countStudents = countStudents + students.count()
-        event_halls = event.eventhall.all()
-        firstCourse = event_courses.first().course
-        secondCourse = event_courses.all()[1].course
-        countSeats = 0
-
-        for event_hall in event_halls:
-
-            hall = event_hall.hall
-            seats = hall.seats.exclude(is_deleted=True)
-            for seat in seats:
-                countSeats = countSeats + 1
-
-        if countSeats < countStudents:
-            event.eventhall.all().delete()
-            return False
-
-        for event_hall in event_halls:
-            hall = event_hall.hall
-            seats = hall.seats.exclude(is_deleted=True)
-
-            firstCourseStudents = firstCourse.students.all()
-            secondCourseStudents = secondCourse.students.all()
-            is_last_seat = False
-            for firstCourseStudent in firstCourseStudents:
-                if is_last_seat:
-                    break
-                for seat in seats:
-                    if seat.column % 2 == 0:
-                        check = Allocation.objects.filter(event=event, seat=seat)
-                        allocated = Allocation.objects.filter(
-                            event=event, student=firstCourseStudent
-                        )
-                        if not check.exists() and not allocated.exists():
-                            Allocation.objects.create(
-                                event=event, seat=seat, student=firstCourseStudent
-                            )
-                            break
-                        is_last_seat = seat == seats.last()
-            is_last_seat_second = False
-            for secondCourseStudent in secondCourseStudents:
-                if is_last_seat_second:
-                    break
-                for seat in seats:
-                    if seat.column % 2 != 0:
-                        check = Allocation.objects.filter(event=event, seat=seat)
-                        allocated = Allocation.objects.filter(
-                            event=event, student=secondCourseStudent
-                        )
-                        if not check.exists() and not allocated.exists():
-                            Allocation.objects.create(
-                                event=event, seat=seat, student=secondCourseStudent
-                            )
-                            break
-                        is_last_seat_second = seat == seats.last()
- """
-
 
 def demo(request):
     context = {"homeurl": "admin_home", "form": EventForm()}
@@ -1342,7 +1205,7 @@ def seed_students(request):
             allSemester = ["first", "second"]
             fieldofstudy = "computing"
             year = "first"
-            semester = "first"
+            semester = "second"
             courses = Course.objects.filter(
                 fieldofstudy=fieldofstudy, year=year, semester=semester
             )

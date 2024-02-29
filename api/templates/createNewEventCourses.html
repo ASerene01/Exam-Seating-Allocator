@@ -1,25 +1,4 @@
 {%extends "base.html"%} {%block start%}
-<form
-  class="d-flex justify-content-center m-2"
-  method="post"
-  enctype="multipart/form-data"
-  id="FieldofStudy"
->
-  {% csrf_token %}
-  <select
-    name="selectedStudy"
-    id="selectedStudy"
-    class="form-select bg-dark text-white me-5"
-    aria-label="FieldofStudy"
-    style="width: 20%"
-  >
-    {%for field in fields%} {%if field == currentfield%}
-    <option selected disabled>{{field |capfirst}}</option>
-    {%else%}
-    <option value="{{field}}">{{field|capfirst}}</option>
-    {%endif%} {%endfor%}
-  </select>
-</form>
 <div class="container mt-5">
   <form
     class="mx-auto card p-4 shadow-lg forms d-flex justify-content-between align-items-center"
@@ -34,7 +13,8 @@
     <div class="alert alert-primary" role="alert">
       {% for message in messages %} {{message}} {% endfor %}
     </div>
-    {% endif %}
+    {% endif %} {%for field in fields%}
+    <h2>{{field |capfirst}}</h2>
     <div class="row">
       {%for year in years%}
       <div class="col-md-4 mt-5">
@@ -51,7 +31,7 @@
           <!-- prettier-ignore -->
           <div class="card-body mb-3">
             {%for course in courses%} 
-            {%if course.year == year and course.semester == semester%}
+            {%if course.year == year and course.semester == semester and course.fieldofstudy == field%}
            
             <h6 class="card-subtitle mb-2 text-muted"> 
               <input type="hidden" id="{{ course.id }}_year" value="{{ course.year }}">
@@ -73,6 +53,8 @@
       </div>
       {%endfor%}
     </div>
+    <hr />
+    {%endfor%}
 
     <button
       type="submit"
