@@ -729,7 +729,7 @@ def student_events_view(request):
     events = [allocation.event for allocation in allocations]
     courses = student.courses.all()
 
-    context = {"homeurl": "admin_home", "events": events, "courses": courses}
+    context = {"homeurl": "student_home", "events": events, "courses": courses}
     return render(request, "viewEventsStudent.html", context)
 
 
@@ -933,11 +933,11 @@ def view_seat_allocations_student(request, id):
     currentuser = request.user
     student = currentuser.student
     event = Event.objects.get(id=id)
-    event_halls = event.eventhall.all()
-    allHalls = [event_hall.hall for event_hall in event_halls]
-    hall = event_halls.first().hall
-    allocations = Allocation.objects.filter(event=event, student=student)
 
+    allocations = Allocation.objects.filter(event=event, student=student)
+    seat = allocations[0].seat
+    hall = seat.hall
+    print(hall)
     hallcolumns = hall.columnspaces.all()
     hallrows = hall.rowspaces.all()
     seatNumbers = hall.seats.all()
@@ -950,7 +950,6 @@ def view_seat_allocations_student(request, id):
         "hallRows": hallrows,
         "allocations": allocations,
         "currentHall": hall,
-        "allHalls": allHalls,
     }
     return render(request, "viewSeatAllocations.html", context)
 
