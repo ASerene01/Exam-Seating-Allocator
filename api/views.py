@@ -499,7 +499,6 @@ def view_halls(request):
 
 @user_passes_test(is_admin, login_url="login_page")
 def registerhall(request):
-    hallAll = Hall.objects.all()
     if request.method == "POST":
         data = request.POST
         hall_name = data.get("hallname")
@@ -522,13 +521,12 @@ def registerhall(request):
         for column in range(int(hall.columns)):
             HallColumnSpaces.objects.create(hall=hall, columnAfter=column)
 
-        return redirect("/edit_hall_layout/" + hall_name)
+        return redirect("/edit_hall_layout/" + hall.id)
     context = {
         "style": "registerhall",
         "jslink": "registerhall",
         "homeurl": "admin_home",
         "page_url": "hall",
-        "halls": hallAll,
     }
     return render(request, "registerHall.html", context)
 
@@ -537,12 +535,81 @@ def registerhall(request):
 def deletehall(request, id):
     queryset = Hall.objects.get(id=id)
     queryset.delete()
-    return redirect("register_hall")
+    return redirect("view_halls")
 
 
 @user_passes_test(is_admin, login_url="login_page")
-def edithalllayout(request, name):
-    hall = Hall.objects.get(name=name)
+def updatehall(request, id):
+    hall_info = Hall.objects.get(id=id)
+    if request.method == "POST":
+        data = request.POST
+        hall_name = data.get("hallname")
+        rows = int(data.get("rows"))
+        columns = int(data.get("columns"))
+        seats = int(data.get("seats"))
+
+        if hall_info.name != hall_name and (
+            hall_info.rows == rows
+            and hall_info.columns == columns
+            and hall_info.noOfSeats == seats
+        ):
+
+            hall_check = Hall.objects.filter(name=hall_name)
+            if hall_check.exists():
+                messages.info(request, "Hall name already registered")
+                return redirect("/update_hall/" + id)
+            hall_info.name = hall_name
+            hall_info.save()
+            return redirect("/edit_hall_layout/" + id)
+        elif (
+            hall_info.name == hall_name
+            and hall_info.rows == rows
+            and hall_info.columns == columns
+            and hall_info.noOfSeats == seats
+        ):
+
+            return redirect("/edit_hall_layout/" + id)
+        else:
+            if hall_info.name != hall_name:
+                hall_check = Hall.objects.filter(name=hall_name)
+                if hall_check.exists():
+                    messages.info(request, "Hall name already registered")
+                    return redirect("/update_hall/" + id)
+
+            seats_obj = hall_info.seats.all()
+            seats_obj.delete()
+            rowSpaces = hall_info.rowspaces.all()
+            rowSpaces.delete()
+            columnSpaces = hall_info.columnspaces.all()
+            columnSpaces.delete()
+            hall_info.name = hall_name
+            hall_info.rows = rows
+            hall_info.columns = columns
+            hall_info.noOfSeats = seats
+            hall_info.save()
+            # Create seats associated with the hall
+            for row in range(int(hall_info.rows)):
+                HallRowSpaces.objects.create(hall=hall_info, rowAfter=row)
+                for column in range(int(hall_info.columns)):
+                    Seat.objects.create(hall=hall_info, row=row, column=column)
+            for column in range(int(hall_info.columns)):
+                HallColumnSpaces.objects.create(hall=hall_info, columnAfter=column)
+
+            return redirect("/edit_hall_layout/" + id)
+
+    context = {
+        "style": "registerhall",
+        "jslink": "registerhall",
+        "homeurl": "admin_home",
+        "page_url": "hall",
+        "hall": hall_info,
+    }
+    return render(request, "updateHall.html", context)
+
+
+@user_passes_test(is_admin, login_url="login_page")
+def edithalllayout(request, id):
+    hall = Hall.objects.get(id=id)
     hallcolumnspaces = hall.columnspaces.all()
     forLastColumn = hallcolumnspaces.order_by("columnAfter")
     lastColumn = forLastColumn.last()
@@ -604,37 +671,37 @@ def addseattohall(request, id):
 @user_passes_test(is_admin, login_url="login_page")
 def addcolumnspacetohall(request, id):
     spaceToAdd = HallColumnSpaces.objects.get(id=id)
-    hallName = spaceToAdd.hall.name
+    hall_id = spaceToAdd.hall.id
     spaceToAdd.is_space = True
     spaceToAdd.save()
-    return redirect("/edit_hall_layout/" + hallName)
+    return redirect("/edit_hall_layout/" + str(hall_id))
 
 
 @user_passes_test(is_admin, login_url="login_page")
 def removecolumnspacefromhall(request, id):
     spaceToRemove = HallColumnSpaces.objects.get(id=id)
-    hallName = spaceToRemove.hall.name
+    hall_id = spaceToRemove.hall.id
     spaceToRemove.is_space = False
     spaceToRemove.save()
-    return redirect("/edit_hall_layout/" + hallName)
+    return redirect("/edit_hall_layout/" + str(hall_id))
 
 
 @user_passes_test(is_admin, login_url="login_page")
 def addrowspacetohall(request, id):
     spaceToAdd = HallRowSpaces.objects.get(id=id)
-    hallName = spaceToAdd.hall.name
+    hall_id = spaceToAdd.hall.id
     spaceToAdd.is_space = True
     spaceToAdd.save()
-    return redirect("/edit_hall_layout/" + hallName)
+    return redirect("/edit_hall_layout/" + str(hall_id))
 
 
 @user_passes_test(is_admin, login_url="login_page")
 def removerowspacefromhall(request, id):
     spaceToRemove = HallRowSpaces.objects.get(id=id)
-    hallName = spaceToRemove.hall.name
+    hall_id = spaceToRemove.hall.id
     spaceToRemove.is_space = False
     spaceToRemove.save()
-    return redirect("/edit_hall_layout/" + hallName)
+    return redirect("/edit_hall_layout/" + str(hall_id))
 
 
 from .forms import EventForm

@@ -43,8 +43,8 @@ urlpatterns = [
     path("view_halls/", view_halls, name="view_halls"),
     path("register_hall/", registerhall, name="register_hall"),
     path("delete_hall/<id>", deletehall, name="delete_hall"),
-    path("edit_hall_layout/<name>", edithalllayout, name="edit_hall_layout"),
-    # path("update_hall/<id>", updatehall, name="update_hall"),
+    path("edit_hall_layout/<id>", edithalllayout, name="edit_hall_layout"),
+    path("update_hall/<id>", updatehall, name="update_hall"),
     path(
         "remove_seat_from_hall/<id>", removeseatfromhall, name="remove_seat_from_hall"
     ),

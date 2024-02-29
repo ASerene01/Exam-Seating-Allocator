@@ -1,0 +1,63 @@
+{%extends "base.html"%} {%block start%}
+<div class="container mt-5">
+  <form
+    class="col-6 mx-auto card p-3 shadow-lg"
+    method="post"
+    enctype="multipart/form-data"
+  >
+    {% csrf_token %}
+    <h2>Update Hall</h2>
+    <hr />
+    {% if messages %}
+    <div class="alert alert-primary" role="alert">
+      {% for message in messages %} {{message}} {% endfor %}
+    </div>
+
+    {% endif %}
+    <div class="row">
+      <div class="col-md-6 mb-3">
+        <label for="InputHallName" class="form-label">Hall-Name</label>
+        <input
+          type="text"
+          class="form-control"
+          id="InputHallName"
+          name="hallname"
+          value="{{hall.name}}"
+        />
+      </div>
+      <div class="col-md-6 mb-3">
+        <label for="InputRows" class="form-label">Rows</label>
+        <input
+          type="text"
+          class="form-control"
+          id="InputRows"
+          name="rows"
+          value="{{hall.rows}}"
+        />
+      </div>
+    </div>
+    <div class="mb-3">
+      <label for="InputColumns" class="form-label">Columns</label>
+      <input
+        type="text"
+        class="form-control"
+        id="InputColumns"
+        name="columns"
+        value="{{hall.columns}}"
+      />
+    </div>
+    <div class="mb-3">
+      <label for="InputSeats" class="form-label">Number of Seats</label>
+      <input
+        type="text"
+        class="form-control"
+        id="InputColumns"
+        name="seats"
+        value="{{hall.noOfSeats}}"
+      />
+    </div>
+    <button type="submit" class="btn btn-primary">Register Hall</button>
+  </form>
+</div>
+
+{%endblock%}
