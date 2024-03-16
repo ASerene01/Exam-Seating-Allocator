@@ -44,8 +44,10 @@
             {%if seatNumber.row == row_number.rowAfter and seatNumber.column == hallColumnSpace.columnAfter%}
               <div class="seat{% if seatNumber.is_deleted %}deleted{% endif %}">
                   {% if seatNumber.is_deleted %}
+                  
                     <a href="/add_seat_to_hall/{{seatNumber.id}}"class="btn seatbutton">{{row_number.rowAfter}}{{hallColumnSpace.columnAfter}}</a><br>
                   {%else%}
+                  
                     <a href="/remove_seat_from_hall/{{seatNumber.id}}"class="btn seatbutton">{{row_number.rowAfter}}{{hallColumnSpace.columnAfter}}</a><br>
                   {%endif%}
               </div>

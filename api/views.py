@@ -110,7 +110,7 @@ def admin_view_profile(request):
 @user_passes_test(is_admin, login_url="login_page")
 def view_users(request):
     currentuser = request.user
-    users = User.objects.exclude(id=currentuser.id)
+    users = User.objects.exclude(id=currentuser.id).order_by("-date_joined")
     context = {
         "homeurl": "admin_home",
         "users": users,
@@ -521,7 +521,7 @@ def registerhall(request):
         for column in range(int(hall.columns)):
             HallColumnSpaces.objects.create(hall=hall, columnAfter=column)
 
-        return redirect("/edit_hall_layout/" + hall.id)
+        return redirect("/edit_hall_layout/" + str(hall.id))
     context = {
         "style": "registerhall",
         "jslink": "registerhall",
@@ -653,19 +653,20 @@ def viewhalllayout(request, id):
 @user_passes_test(is_admin, login_url="login_page")
 def removeseatfromhall(request, id):
     seatToDelete = Seat.objects.get(id=id)
-    hallName = seatToDelete.hall.name
+    hallid = seatToDelete.hall.id
     seatToDelete.is_deleted = True
     seatToDelete.save()
-    return redirect("/edit_hall_layout/" + hallName)
+    return redirect("/edit_hall_layout/" + str(hallid))
 
 
 @user_passes_test(is_admin, login_url="login_page")
 def addseattohall(request, id):
+    print(id)
     seatToAdd = Seat.objects.get(id=id)
-    hallName = seatToAdd.hall.name
+    hallid = seatToAdd.hall.id
     seatToAdd.is_deleted = False
     seatToAdd.save()
-    return redirect("/edit_hall_layout/" + hallName)
+    return redirect("/edit_hall_layout/" + str(hallid))
 
 
 @user_passes_test(is_admin, login_url="login_page")
@@ -709,8 +710,8 @@ from .forms import EventForm
 
 @user_passes_test(is_admin, login_url="login_page")
 def admin_events_view(request):
-    events = Event.objects.all()
-    context = {"homeurl": "admin_home", "events": events}
+    events = Event.objects.all().order_by("-date")
+    context = {"homeurl": "admin_home", "page_url": "event", "events": events}
     return render(request, "viewEvents.html", context)
 
 
@@ -757,17 +758,50 @@ def create_new_event(request):
     return render(request, "createNewEvent.html", context)
 
 
+def edit_event(request, id):
+    event = Event.objects.get(id=id)
+    if request.method == "POST":
+        data = request.POST
+        name = data.get("event")
+        date = data.get("Date")
+        startTime = data.get("startTime")
+        endTime = data.get("endTime")
+        event.name = name
+
+        if (
+            str(date) != str(event.date)
+            or startTime != event.start_time.strftime("%H:%M")
+            or endTime != event.end_time.strftime("%H:%M")
+        ):
+            eventCheck = Event.objects.filter(
+                date=date, start_time=startTime, end_time=endTime
+            )
+            if eventCheck.exists():
+                messages.info(request, "Event Already There ")
+                return redirect("/edit_event/" + str(event.id))
+        event.date = date
+        event.start_time = startTime
+        event.end_time = endTime
+        event.save()
+        id = event.id
+        return redirect("/create_new_event_courses/" + str(id))
+
+    context = {"homeurl": "admin_home", "style": "create_new_event", "event": event}
+    return render(request, "editEvent.html", context)
+
+
 def create_new_event_courses(request, id):
     courses = Course.objects.all()
+    event = Event.objects.get(id=id)
     fields = ["computing", "multimedia", "networking"]
     currentfield = "computing"
-
+    old_event_courses = event.eventcourse.all().values_list("course", flat=True)
     if request.method == "POST":
+        deletepreviouscourses = event.eventcourse.all().delete()
         data = request.POST
         selectedCourses = data.getlist("selectedcourses")
         for eachcourse in selectedCourses:
             course = Course.objects.get(id=eachcourse)
-            event = Event.objects.get(id=id)
             EventCourses.objects.create(event=event, course=course)
         return redirect("/create_new_event_halls/" + id)
     allYears = courses.values_list("year", flat=True).distinct()
@@ -780,6 +814,7 @@ def create_new_event_courses(request, id):
         "semesters": allSemesters,
         "fields": fields,
         "currentfield": currentfield,
+        "oldcourses": old_event_courses,
     }
     return render(request, "createNewEventCourses.html", context)
 
@@ -789,20 +824,25 @@ def create_new_event_courses(request, id):
 def create_new_event_halls(request, id):
     halls = Hall.objects.all()
     event = Event.objects.get(id=id)
+    old_event_halls = event.eventhall.all().values_list("hall", flat=True)
     if request.method == "POST":
+        deletepreviouscourses = event.eventhall.all().delete()
         data = request.POST
         selectedHalls = data.getlist("selectedhalls")
 
         for eachHall in selectedHalls:
             hall = Hall.objects.get(id=eachHall)
             EventHalls.objects.create(event=event, hall=hall)
+        allocations = event.eventallocation.all()
+        allocations.delete()
         eligible = allocation(id)
 
         if eligible == False:
+
             messages.error(request, "Not enough seats for all students")
             return redirect("/create_new_event_halls/" + id)
         return redirect("/view_seat_allocations/" + id)
-    context = {"homeurl": "admin_home", "halls": halls}
+    context = {"homeurl": "admin_home", "halls": halls, "oldhalls": old_event_halls}
     return render(request, "createNewEventHalls.html", context)
 
 
@@ -826,7 +866,6 @@ def delete_event(request, id):
     deleted = event.delete()
     if deleted:
         messages.success(request, "Event " + event.name + " has been deleted")
-
     else:
         messages.error(request, "Event was not deleted ")
     return redirect("admin_events_view")
@@ -1203,7 +1242,7 @@ def seed_students(request):
             allYear = ["first", "second", "third"]
             allSemester = ["first", "second"]
             fieldofstudy = "computing"
-            year = "first"
+            year = "third"
             semester = "second"
             courses = Course.objects.filter(
                 fieldofstudy=fieldofstudy, year=year, semester=semester

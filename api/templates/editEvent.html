@@ -1,0 +1,61 @@
+{%extends "base.html"%} {%block start%}
+<div class="container mt-5">
+  <form
+    class="col-6 mx-auto card p-4 shadow-lg forms"
+    method="post"
+    enctype="multipart/form-data"
+  >
+    {% csrf_token %}
+    <h2>Edit Event</h2>
+    <hr />
+    {% if messages %}
+    <div class="alert alert-primary" role="alert">
+      {% for message in messages %} {{message}} {% endfor %}
+    </div>
+
+    {% endif %}
+
+    <div class="col mb-3">
+      <div class="form-floating mb-3">
+        <input
+          type="text"
+          class="form-control mb-5 w-50 inputfield"
+          id="InputEvent"
+          name="event"
+          placeholder="Event Name"
+          value="{{event.name}}"
+          required
+        />
+        <label class="mb-3 form-label" for="InputEvent">Event Name</label>
+      </div>
+
+      <div class="mb-3">
+        <input type="date" class="form-control mb-5 w-50 inputfield" name="Date"
+        value="{{ event.date|date:"Y-m-d" }}" required />
+      </div>
+
+      <div class="mb-3">
+        <input
+          type="time"
+          class="form-control mb-5 w-50 inputfield"
+          name="startTime"
+          value="{{ event.start_time|time:'H:i' }}"
+          required
+        />
+      </div>
+      <div class="mb-3">
+        <input
+          type="time"
+          class="form-control mb-5 w-50 inputfield"
+          name="endTime"
+          value="{{event.end_time|time:'H:i'}}"
+          required
+        />
+      </div>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update</button>
+  </form>
+</div>
+
+{%endblock%}

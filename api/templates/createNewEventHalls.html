@@ -13,7 +13,7 @@
       {% for message in messages %} {{message}} {% endfor %}
     </div>
     {% endif %}
-
+    <!-- prettier-ignore -->
     <div class="row">
       {%for hall in halls%}
       <div class="col-md-4 mt-5">
@@ -29,7 +29,9 @@
               id="{{hall.id}}"
               name="selectedhalls"
               style="transform: scale(1.5)"
-            />
+            {% if hall.id in oldhalls %}
+               checked
+            {% endif %}/>
           </div>
           <!-- prettier-ignore -->
           <div class="card-body mb-3">

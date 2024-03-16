@@ -43,6 +43,9 @@
               id="{{course.id}}"
               name="selectedcourses"
               onclick="handleCheckboxClick(this)"
+              {% if course.id in oldcourses %}
+               checked
+            {% endif %}
               /> 
               {{course.name |capfirst}}
             </h6>

@@ -6,11 +6,7 @@
   </div>
   <br>
   {%endif%}
-  {% if messages %}
-    <div class="alert alert-primary mb-3" role="alert">
-      {% for message in messages %} {{message}} {% endfor %}
-    </div>
-    {% endif %} 
+  
   <table class="table mt-5 table-dark">
   <thead>
     <tr>
@@ -33,7 +29,7 @@
       
       <td>
         {%if not user.user_type == "teacher"%}
-         <a href="/update_course/{{course.id}}" class="btn btn-success m-2">Edit</button>
+         <a href="/edit_event/{{event.id}}" class="btn btn-success m-2">Edit</button>
         <a href="/delete_event/{{event.id}}" class="btn btn-danger m-2" onclick="return confirm('Are you sure you want to delete this event?');">Delete</button>
           <a href="/regenerate_allocations/{{event.id}}" class="btn btn-primary m-2" onclick="return confirm('Are you sure you want to regenerate allocations for this event?');">Regenerate</button>
           {%endif%}

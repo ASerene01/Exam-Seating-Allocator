@@ -28,7 +28,7 @@ class User(AbstractUser):
     user_image = models.ImageField(
         upload_to="Users",
     )
-    # related_name attributes to avoid clashes
+
     groups = models.ManyToManyField(Group, related_name="api_users")
     user_permissions = models.ManyToManyField(Permission, related_name="api_users")
 
