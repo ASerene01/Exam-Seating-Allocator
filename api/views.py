@@ -26,8 +26,12 @@ def is_teacher(user):
 
 
 def login_page(request):
+    # Retrieve the current user from the request
     user = request.user
+
+    # Check if the user is already authenticated
     if user.is_authenticated:
+        # Redirect users based on their user_type
         if user.user_type == "admin":
             return redirect("admin_home/")
         elif user.user_type == "student":
@@ -35,15 +39,25 @@ def login_page(request):
         elif user.user_type == "teacher":
             return redirect("teacher_home/")
     else:
+        # Process login form submission if the request method is POST
         if request.method == "POST":
+            # Retrieve username and password from the form data
             username = request.POST.get("username")
             password = request.POST.get("password")
+
+            # Check if username is an email and convert it to username format
             if username.find("@") != -1:
                 username = User.objects.get(email=username.lower()).username
+
+            # Check if the provided username exists
             if not User.objects.filter(username=username).exists():
                 messages.error(request, "Invalid Username or Email")
                 return redirect("login_page")
+
+            # Authenticate the user with the provided credentials
             user = authenticate(request, username=username, password=password)
+
+            # If authentication is successful, log in the user and redirect based on user_type
             if user is not None:
                 login(request, user)
                 messages.error(request, "Success")
@@ -54,7 +68,10 @@ def login_page(request):
                 elif user.user_type == "teacher":
                     return redirect("teacher_home/")
             else:
+                # If authentication fails, display error message
                 messages.error(request, "Invalid password")
+
+    # Context data for rendering login.html template
     context = {"homeurl": "login_page"}
     return render(request, "login.html", context)
 
@@ -726,11 +743,28 @@ def teacher_events_view(request):
 def student_events_view(request):
     user = request.user
     student = user.student
-    allocations = Allocation.objects.filter(student=student)
+    allocations = Allocation.objects.filter(student=student).order_by(
+        "-event__date", "event__start_time"
+    )
+    print(allocations)
     events = [allocation.event for allocation in allocations]
     courses = student.courses.all()
 
-    context = {"homeurl": "student_home", "events": events, "courses": courses}
+    # Organize events with their halls
+    events_with_halls = []
+    for allocation in allocations:
+        event = allocation.event
+        seat = allocation.seat
+        hall = seat.hall
+
+        events_with_halls.append({"event": event, "hall": hall})
+
+    context = {
+        "homeurl": "student_home",
+        "events": events,
+        "events_with_halls": events_with_halls,
+        "courses": courses,
+    }
     return render(request, "viewEventsStudent.html", context)
 
 
@@ -754,7 +788,11 @@ def create_new_event(request):
         id = event.id
         return redirect("/create_new_event_courses/" + str(id))
 
-    context = {"homeurl": "admin_home", "style": "create_new_event"}
+    context = {
+        "homeurl": "admin_home",
+        "style": "create_new_event",
+        "page_url": "event",
+    }
     return render(request, "createNewEvent.html", context)
 
 
@@ -976,12 +1014,12 @@ def view_seat_allocations_student(request, id):
     allocations = Allocation.objects.filter(event=event, student=student)
     seat = allocations[0].seat
     hall = seat.hall
-    print(hall)
+
     hallcolumns = hall.columnspaces.all()
     hallrows = hall.rowspaces.all()
     seatNumbers = hall.seats.all()
     context = {
-        "style": "view_hall_layout",
+        "style": "view_seat_allocations",
         "jslink": "view_hall_layout",
         "homeurl": "student_home",
         "seatNumbers": seatNumbers,

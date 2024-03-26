@@ -78,3 +78,19 @@
   align-items: center;
   font-size: 10px;
 }
+
+.seatallocated {
+  width: 4vw;
+  height: 4vw;
+  font-size: 10px;
+  padding: 0;
+  text-align: center;
+  border-radius: 5px;
+
+  background-color: #235484;
+  opacity: 0.5;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 10px;
+}

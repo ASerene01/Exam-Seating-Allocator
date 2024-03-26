@@ -50,13 +50,13 @@
          {%for seatNumber in seatNumbers%}
             {%if seatNumber.row == row_number.rowAfter and seatNumber.column == hallColumn.columnAfter%}
                
-              <div class="seat{%if seatNumber.is_deleted == False%}{%for allocation in allocations%}{% if seatNumber.row == allocation.seat.row and seatNumber.column == allocation.seat.column and allocation.seat == seatNumber %}deleted{% endif %}{%endfor%}{%else%}deleted{%endif%}">
+              <div class="seat{%if seatNumber.is_deleted == False%}{%for allocation in allocations%}{% if seatNumber.row == allocation.seat.row and seatNumber.column == allocation.seat.column and allocation.seat == seatNumber %}allocated{% endif %}{%endfor%}{%else%}deleted{%endif%}">
                 
                   {%if seatNumber.is_deleted == False%}{%for allocation in allocations%}{% if seatNumber.row == allocation.seat.row and seatNumber.column == allocation.seat.column and allocation.seat == seatNumber %}
                     {%if user.user_type == 'admin'%}
-                      <a href="/show_student_info/{{allocation.id}}"class="btn seatbutton">{{row_number.rowAfter}}{{hallColumn.columnAfter}}</a><br>
+                      <a href="/show_student_info/{{allocation.id}}"class="btn seatbutton text-light">{{row_number.rowAfter}}{{hallColumn.columnAfter}}</a><br>
                     {%elif user.user_type == "teacher"%} 
-                      <a href="/show_student_info_teacher/{{allocation.id}}"class="btn seatbutton">{{row_number.rowAfter}}{{hallColumn.columnAfter}}</a><br>
+                      <a href="/show_student_info_teacher/{{allocation.id}}"class="btn seatbutton text-light">{{row_number.rowAfter}}{{hallColumn.columnAfter}}</a><br>
                     {%else%}
                         <div class="btn seatbutton">{{row_number.rowAfter}}{{hallColumn.columnAfter}}</div>           
                     {%endif%}

@@ -1,7 +1,7 @@
 {%extends "base.html"%} {%block start%}
 <div class="container mt-5">
   <form
-    class="col-6 mx-auto card p-3 shadow-lg"
+    class="col-6 mx-auto card p-3 shadow-lg forms"
     method="post"
     enctype="multipart/form-data"
   >
@@ -19,28 +19,38 @@
         <label for="InputHallName" class="form-label">Hall-Name</label>
         <input
           type="text"
-          class="form-control"
+          class="form-control bg-dark text-light"
           id="InputHallName"
           name="hallname"
         />
       </div>
       <div class="col-md-6 mb-3">
         <label for="InputRows" class="form-label">Rows</label>
-        <input type="text" class="form-control" id="InputRows" name="rows" />
+        <input
+          type="text"
+          class="form-control bg-dark text-light"
+          id="InputRows"
+          name="rows"
+        />
       </div>
     </div>
     <div class="mb-3">
       <label for="InputColumns" class="form-label">Columns</label>
       <input
         type="text"
-        class="form-control"
+        class="form-control bg-dark text-light"
         id="InputColumns"
         name="columns"
       />
     </div>
     <div class="mb-3">
       <label for="InputSeats" class="form-label">Number of Seats</label>
-      <input type="text" class="form-control" id="InputColumns" name="seats" />
+      <input
+        type="text"
+        class="form-control bg-dark text-light"
+        id="InputColumns"
+        name="seats"
+      />
     </div>
     <button type="submit" class="btn btn-primary">Register Hall</button>
   </form>

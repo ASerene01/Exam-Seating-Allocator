@@ -1,7 +1,7 @@
 {%extends "base.html"%} {%block start%}
 <div class="container mt-5">
   <form
-    class="col-6 mx-auto card p-3 shadow-lg"
+    class="col-6 mx-auto card p-3 shadow-lg forms"
     method="post"
     enctype="multipart/form-data"
   >
@@ -19,7 +19,7 @@
         <label for="InputFirstName" class="form-label">First Name</label>
         <input
           type="text"
-          class="form-control"
+          class="form-control bg-dark text-light"
           id="InputFirstName"
           name="firstname"
           value="{{ data.firstname }}"
@@ -29,7 +29,7 @@
         <label for="InputLastName" class="form-label">Last Name</label>
         <input
           type="text"
-          class="form-control"
+          class="form-control bg-dark text-light"
           id="InputLastName"
           name="lastname"
         />
@@ -39,21 +39,28 @@
       <label for="InputUsername" class="form-label">Username</label>
       <input
         type="text"
-        class="form-control"
+        class="form-control bg-dark text-light"
         id="InputUsername"
         name="username"
       />
     </div>
     <div class="mb-3">
       <label for="InputEmail" class="form-label">Email</label>
-      <input type="email" class="form-control" id="InputEmail" name="email" />
+      <input
+        type="email"
+        class="form-control bg-dark text-light"
+        id="InputEmail"
+        name="email"
+      />
       <div id="emailHelp" class="form-text">
         We'll never share your email or username with anyone else.
       </div>
     </div>
     <div class="row">
       <div class="col-">
-        <label for="userType" class="form-label">User Type</label>
+        <label for="userType" class="form-label bg-dark text-light"
+          >User Type</label
+        >
         <select
           name="user_type"
           id="userType"
@@ -115,7 +122,7 @@
       <input
         type="password"
         name="password"
-        class="form-control"
+        class="form-control bg-dark text-light"
         id="exampleInputPassword1"
       />
     </div>
@@ -123,7 +130,11 @@
       <label for="exampleInputPassword1" class="form-label">
         Upload your profile picture
       </label>
-      <input name="user_image" type="file" class="form-control" />
+      <input
+        name="user_image"
+        type="file"
+        class="form-control bg-dark text-light"
+      />
     </div>
     <button type="submit" class="btn btn-primary">Register</button>
   </form>
