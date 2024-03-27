@@ -1,6 +1,4 @@
 {%extends "base.html"%} {%block start%} {% csrf_token %}
-
-
  <form
     class="d-flex justify-content-center m-2"
     method="post"
@@ -12,16 +10,12 @@
     <div class="alert alert-primary" role="alert">
       {% for message in messages %} {{message}} {% endfor %}
     </div>
-
     {% endif %}
+    <!-- Display hall selection dropdown -->
+    <!--prettier-ignore-->
         {%if not user.user_type == 'student'%}
-          <select
-            name="selectedHall"
-            id="selectedHall"
-            class="form-select bg-dark text-white me-5"
-            aria-label="Halls"
-            style="width: 20%"
-          >
+          <select name="selectedHall" id="selectedHall" class="form-select bg-dark text-white me-5" aria-label="Halls"style="width: 20%">
+          <!-- Iterate over halls and display options -->
           {%for hall in allHalls%}
               {%if hall == currentHall%}
                 <option selected disabled>{{hall.name}}</option>
@@ -32,27 +26,29 @@
           
           </select>
         
-      {%endif%}
- 
-
-    
+      {%endif%}    
   </form>
+  <!-- End of hall selection form -->
 
-
+  <!-- Start of hall seating allocations -->
 <div class="hall">
-  <div class="screen">Screen</div>
-
-
+  <div class="screen">Front</div>
   {%for row_number in hallRows %}
-  
       <div class="row">
         {% for hallColumn in hallColumns %}
          {%for seatNumber in seatNumbers%}
             {%if seatNumber.row == row_number.rowAfter and seatNumber.column == hallColumn.columnAfter%}
-               
               <div class="seat{%if seatNumber.is_deleted == False%}{%for allocation in allocations%}{% if seatNumber.row == allocation.seat.row and seatNumber.column == allocation.seat.column and allocation.seat == seatNumber %}allocated{% endif %}{%endfor%}{%else%}deleted{%endif%}">
                 
-                  {%if seatNumber.is_deleted == False%}{%for allocation in allocations%}{% if seatNumber.row == allocation.seat.row and seatNumber.column == allocation.seat.column and allocation.seat == seatNumber %}
+                    
+                  
+                  {%if seatNumber.is_deleted == False%}{%for allocation in allocations%}
+                 
+                  <!-- Check if allocation matches seat -->
+                  {% if seatNumber.row == allocation.seat.row and seatNumber.column == allocation.seat.column and allocation.seat == seatNumber %}
+                  <!-- Display appropriate button based on user type -->
+                   <span class="student-info" id="top">{{allocation.student.user.first_name}} {{allocation.student.user.last_name}} <br>
+                  Click to see more info </span>
                     {%if user.user_type == 'admin'%}
                       <a href="/show_student_info/{{allocation.id}}"class="btn seatbutton text-light">{{row_number.rowAfter}}{{hallColumn.columnAfter}}</a><br>
                     {%elif user.user_type == "teacher"%} 
@@ -60,11 +56,7 @@
                     {%else%}
                         <div class="btn seatbutton">{{row_number.rowAfter}}{{hallColumn.columnAfter}}</div>           
                     {%endif%}
-                    
-                    
-                  {% endif %}{%endfor%}{%endif%}
-                   
-                    
+                  {% endif %}{%endfor%}{%endif%}  
               </div>
               {%if hallColumn.is_space == True%}
               <div class="space">

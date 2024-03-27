@@ -1,59 +1,43 @@
-{%extends "base.html"%} {%block start%}
+{% extends "base.html" %}
+{% block start %}
+
+<!-- Container for page content -->
 <div class="container mt-5">
-  <form
-    class="col-6 mx-auto card p-3 shadow-lg forms"
-    method="post"
-    enctype="multipart/form-data"
-  >
+  <!-- Hall registration form -->
+  <form class="col-6 mx-auto card p-3 shadow-lg forms" method="post" enctype="multipart/form-data">
     {% csrf_token %}
     <h2>Register Hall</h2>
     <hr />
     {% if messages %}
+    <!-- Display messages -->
     <div class="alert alert-primary" role="alert">
-      {% for message in messages %} {{message}} {% endfor %}
+      {% for message in messages %}
+      {{ message }}
+      {% endfor %}
     </div>
-
     {% endif %}
+    <!-- Hall details inputs -->
     <div class="row">
       <div class="col-md-6 mb-3">
-        <label for="InputHallName" class="form-label">Hall-Name</label>
-        <input
-          type="text"
-          class="form-control bg-dark text-light"
-          id="InputHallName"
-          name="hallname"
-        />
+        <label for="InputHallName" class="form-label">Hall Name</label>
+        <input type="text" class="form-control bg-dark text-light" id="InputHallName" name="hallname" />
       </div>
       <div class="col-md-6 mb-3">
         <label for="InputRows" class="form-label">Rows</label>
-        <input
-          type="text"
-          class="form-control bg-dark text-light"
-          id="InputRows"
-          name="rows"
-        />
+        <input type="text" class="form-control bg-dark text-light" id="InputRows" name="rows" />
       </div>
     </div>
     <div class="mb-3">
       <label for="InputColumns" class="form-label">Columns</label>
-      <input
-        type="text"
-        class="form-control bg-dark text-light"
-        id="InputColumns"
-        name="columns"
-      />
+      <input type="text" class="form-control bg-dark text-light" id="InputColumns" name="columns" />
     </div>
     <div class="mb-3">
       <label for="InputSeats" class="form-label">Number of Seats</label>
-      <input
-        type="text"
-        class="form-control bg-dark text-light"
-        id="InputColumns"
-        name="seats"
-      />
+      <input type="text" class="form-control bg-dark text-light" id="InputSeats" name="seats" />
     </div>
+    <!-- Submit button to procceed to registration-->
     <button type="submit" class="btn btn-primary">Register Hall</button>
   </form>
 </div>
 
-{%endblock%}
+{% endblock %}

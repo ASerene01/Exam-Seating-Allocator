@@ -13,6 +13,7 @@
       {% for message in messages %} {{message}} {% endfor %}
     </div>
     {% endif %}
+    <!-- Display halls in rows -->
     <!-- prettier-ignore -->
     <div class="row">
       {%for hall in halls%}
@@ -21,6 +22,7 @@
           <div
             class="card-header d-flex justify-content-between align-items-center "
           >
+          <!-- Display hall name and checkbox -->
             <h5 class="card-title">{{hall.name |capfirst}}</h5>
             <input
               class="card-title"
@@ -33,6 +35,7 @@
                checked
             {% endif %}/>
           </div>
+          <!-- Display hall details -->
           <!-- prettier-ignore -->
           <div class="card-body mb-3">
               <h6><span>Rows:</span> {{ hall.rows }}</h6> 
@@ -46,7 +49,7 @@
       </div>
       {%endfor%}
     </div>
-
+    <!-- Submit button -->
     <button type="submit" class="btn btn-primary">Next</button>
   </form>
 </div>

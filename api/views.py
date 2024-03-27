@@ -126,8 +126,11 @@ def admin_view_profile(request):
 
 @user_passes_test(is_admin, login_url="login_page")
 def view_users(request):
+    # Retrieve the current user from the request
     currentuser = request.user
+    # Query all users except the current user and order by date joined
     users = User.objects.exclude(id=currentuser.id).order_by("-date_joined")
+    # Context data
     context = {
         "homeurl": "admin_home",
         "users": users,
@@ -504,13 +507,17 @@ def updatecourse(request, id):
 
 @user_passes_test(is_admin, login_url="login_page")
 def view_halls(request):
+    # Query all halls
     halls = Hall.objects.all()
+
+    # Context data
     context = {
         "homeurl": "admin_home",
         "halls": halls,
         "page_url": "hall",
         "style": "view_courses",
     }
+
     return render(request, "viewHalls.html", context)
 
 
@@ -522,23 +529,32 @@ def registerhall(request):
         rows = data.get("rows")
         columns = data.get("columns")
         seats = data.get("seats")
+
+        # Check if the hall with the given name already exists
         halls = Hall.objects.filter(name=hall_name)
         if halls.exists():
             messages.info(request, "Hall already registered")
             return redirect("/register_hall/")
+
+        # Create the hall and save it to the database
         hall = Hall.objects.create(
             name=hall_name, rows=rows, columns=columns, noOfSeats=seats
         )
         hall.save()
+
         # Create seats associated with the hall
         for row in range(int(hall.rows)):
             HallRowSpaces.objects.create(hall=hall, rowAfter=row)
             for column in range(int(hall.columns)):
                 Seat.objects.create(hall=hall, row=row, column=column)
+
+        # Create column spaces associated with the hall
         for column in range(int(hall.columns)):
             HallColumnSpaces.objects.create(hall=hall, columnAfter=column)
 
         return redirect("/edit_hall_layout/" + str(hall.id))
+
+    # Context data
     context = {
         "style": "registerhall",
         "jslink": "registerhall",
@@ -550,14 +566,18 @@ def registerhall(request):
 
 @user_passes_test(is_admin, login_url="login_page")
 def deletehall(request, id):
-    queryset = Hall.objects.get(id=id)
-    queryset.delete()
+    # Retrieve hall object by id and delete it
+    hall = Hall.objects.get(id=id)
+    hall.delete()
+    # Redirect to view halls page
     return redirect("view_halls")
 
 
 @user_passes_test(is_admin, login_url="login_page")
 def updatehall(request, id):
+    # Retrieve hall information by id
     hall_info = Hall.objects.get(id=id)
+
     if request.method == "POST":
         data = request.POST
         hall_name = data.get("hallname")
@@ -565,12 +585,12 @@ def updatehall(request, id):
         columns = int(data.get("columns"))
         seats = int(data.get("seats"))
 
+        # Check if hall name is being updated and if new name already exists
         if hall_info.name != hall_name and (
             hall_info.rows == rows
             and hall_info.columns == columns
             and hall_info.noOfSeats == seats
         ):
-
             hall_check = Hall.objects.filter(name=hall_name)
             if hall_check.exists():
                 messages.info(request, "Hall name already registered")
@@ -578,14 +598,17 @@ def updatehall(request, id):
             hall_info.name = hall_name
             hall_info.save()
             return redirect("/edit_hall_layout/" + id)
+
+        # If hall information remains the same, redirect to edit hall layout
         elif (
             hall_info.name == hall_name
             and hall_info.rows == rows
             and hall_info.columns == columns
             and hall_info.noOfSeats == seats
         ):
-
             return redirect("/edit_hall_layout/" + id)
+
+        # If any information other than the name is updated
         else:
             if hall_info.name != hall_name:
                 hall_check = Hall.objects.filter(name=hall_name)
@@ -593,17 +616,21 @@ def updatehall(request, id):
                     messages.info(request, "Hall name already registered")
                     return redirect("/update_hall/" + id)
 
+            # Delete existing seats, row spaces, and column spaces
             seats_obj = hall_info.seats.all()
             seats_obj.delete()
             rowSpaces = hall_info.rowspaces.all()
             rowSpaces.delete()
             columnSpaces = hall_info.columnspaces.all()
             columnSpaces.delete()
+
+            # Update hall information
             hall_info.name = hall_name
             hall_info.rows = rows
             hall_info.columns = columns
             hall_info.noOfSeats = seats
             hall_info.save()
+
             # Create seats associated with the hall
             for row in range(int(hall_info.rows)):
                 HallRowSpaces.objects.create(hall=hall_info, rowAfter=row)
@@ -611,9 +638,8 @@ def updatehall(request, id):
                     Seat.objects.create(hall=hall_info, row=row, column=column)
             for column in range(int(hall_info.columns)):
                 HallColumnSpaces.objects.create(hall=hall_info, columnAfter=column)
-
             return redirect("/edit_hall_layout/" + id)
-
+    # Context data
     context = {
         "style": "registerhall",
         "jslink": "registerhall",
@@ -626,12 +652,17 @@ def updatehall(request, id):
 
 @user_passes_test(is_admin, login_url="login_page")
 def edithalllayout(request, id):
+    # Retrieve hall information by id
     hall = Hall.objects.get(id=id)
+    # Retrieve column spaces for the hall
     hallcolumnspaces = hall.columnspaces.all()
     forLastColumn = hallcolumnspaces.order_by("columnAfter")
     lastColumn = forLastColumn.last()
+    # Retrieve row spaces for the hall
     hallrowspaces = hall.rowspaces.all()
+    # Retrieve seat numbers for the hall
     seatNumbers = hall.seats.all()
+    # Context data for rendering editHall.html template
     context = {
         "style": "edithall",
         "jslink": "edithall",
@@ -669,64 +700,85 @@ def viewhalllayout(request, id):
 
 @user_passes_test(is_admin, login_url="login_page")
 def removeseatfromhall(request, id):
+    # Retrieve seat information by id
     seatToDelete = Seat.objects.get(id=id)
+    # Retrieve hall id associated with the seat
     hallid = seatToDelete.hall.id
+    # Mark the seat as deleted
     seatToDelete.is_deleted = True
     seatToDelete.save()
+    # Redirect to edit hall layout page
     return redirect("/edit_hall_layout/" + str(hallid))
 
 
 @user_passes_test(is_admin, login_url="login_page")
 def addseattohall(request, id):
-    print(id)
+    # Retrieve seat information by id
     seatToAdd = Seat.objects.get(id=id)
+    # Retrieve hall id associated with the seat
     hallid = seatToAdd.hall.id
+    # Mark the seat as not deleted
     seatToAdd.is_deleted = False
     seatToAdd.save()
+    # Redirect to edit hall layout page
     return redirect("/edit_hall_layout/" + str(hallid))
 
 
 @user_passes_test(is_admin, login_url="login_page")
 def addcolumnspacetohall(request, id):
+    # Retrieve column space information by id
     spaceToAdd = HallColumnSpaces.objects.get(id=id)
+    # Retrieve hall id associated with the column space
     hall_id = spaceToAdd.hall.id
+    # Mark the column space as a space
     spaceToAdd.is_space = True
     spaceToAdd.save()
+    # Redirect to edit hall layout page
     return redirect("/edit_hall_layout/" + str(hall_id))
 
 
 @user_passes_test(is_admin, login_url="login_page")
 def removecolumnspacefromhall(request, id):
+    # Retrieve column space information by id
     spaceToRemove = HallColumnSpaces.objects.get(id=id)
+    # Retrieve hall id associated with the column space
     hall_id = spaceToRemove.hall.id
+    # Mark the column space as not a space
     spaceToRemove.is_space = False
     spaceToRemove.save()
+    # Redirect to edit hall layout page
     return redirect("/edit_hall_layout/" + str(hall_id))
 
 
 @user_passes_test(is_admin, login_url="login_page")
 def addrowspacetohall(request, id):
+    # Retrieve row space information by id
     spaceToAdd = HallRowSpaces.objects.get(id=id)
+    # Retrieve hall id associated with the row space
     hall_id = spaceToAdd.hall.id
+    # Mark the row space as a space
     spaceToAdd.is_space = True
     spaceToAdd.save()
+    # Redirect to edit hall layout page
     return redirect("/edit_hall_layout/" + str(hall_id))
 
 
 @user_passes_test(is_admin, login_url="login_page")
 def removerowspacefromhall(request, id):
+    # Retrieve row space information by id
     spaceToRemove = HallRowSpaces.objects.get(id=id)
+    # Retrieve hall id associated with the row space
     hall_id = spaceToRemove.hall.id
+    # Mark the row space as not a space
     spaceToRemove.is_space = False
     spaceToRemove.save()
+    # Redirect to edit hall layout page
     return redirect("/edit_hall_layout/" + str(hall_id))
-
-
-from .forms import EventForm
 
 
 @user_passes_test(is_admin, login_url="login_page")
 def admin_events_view(request):
+    # Retrieve all events and order them by date in descending order
     events = Event.objects.all().order_by("-date")
     context = {"homeurl": "admin_home", "page_url": "event", "events": events}
     return render(request, "viewEvents.html", context)
@@ -734,20 +786,25 @@ def admin_events_view(request):
 
 @user_passes_test(is_teacher, login_url="login_page")
 def teacher_events_view(request):
-    events = Event.objects.all()
+    # Retrieve all events and order them by date in descending order
+    events = Event.objects.all().order_by("-date")
     context = {"homeurl": "teacher_home", "events": events}
     return render(request, "viewEvents.html", context)
 
 
 @user_passes_test(is_student, login_url="login_page")
 def student_events_view(request):
+    # Retrieve the current user
     user = request.user
+    # Retrieve the student associated with the user
     student = user.student
+    # Retrieve allocations for the student and order them by event date and start time
     allocations = Allocation.objects.filter(student=student).order_by(
         "-event__date", "event__start_time"
     )
-    print(allocations)
+    # Extract events from allocations
     events = [allocation.event for allocation in allocations]
+    # Retrieve courses associated with the student
     courses = student.courses.all()
 
     # Organize events with their halls
@@ -770,17 +827,22 @@ def student_events_view(request):
 
 def create_new_event(request):
     if request.method == "POST":
+        # get all the entered details
         data = request.POST
         name = data.get("event")
         date = data.get("Date")
         startTime = data.get("startTime")
         endTime = data.get("endTime")
+
+        # Check if the event already exists
         eventCheck = Event.objects.filter(
             date=date, start_time=startTime, end_time=endTime
         )
         if eventCheck.exists():
-            messages.info(request, "Event Already There ")
+            messages.info(request, "Event already exists.")
             return redirect("/create_new_event/")
+
+        # Create a new event
         event = Event.objects.create(
             name=name, date=date, start_time=startTime, end_time=endTime
         )
@@ -833,17 +895,25 @@ def create_new_event_courses(request, id):
     event = Event.objects.get(id=id)
     fields = ["computing", "multimedia", "networking"]
     currentfield = "computing"
+    # list of all the previously selected courses
     old_event_courses = event.eventcourse.all().values_list("course", flat=True)
+
     if request.method == "POST":
-        deletepreviouscourses = event.eventcourse.all().delete()
+        # Delete previously selected courses for the event
+        delete_previous_courses = event.eventcourse.all().delete()
         data = request.POST
         selectedCourses = data.getlist("selectedcourses")
-        for eachcourse in selectedCourses:
-            course = Course.objects.get(id=eachcourse)
+
+        # Add newly selected courses for the event
+        for each_course in selectedCourses:
+            course = Course.objects.get(id=each_course)
             EventCourses.objects.create(event=event, course=course)
+
         return redirect("/create_new_event_halls/" + id)
+
     allYears = courses.values_list("year", flat=True).distinct()
     allSemesters = courses.values_list("semester", flat=True).distinct()
+
     context = {
         "jslink": "create_new_event_courses",
         "homeurl": "admin_home",
@@ -863,23 +933,31 @@ def create_new_event_halls(request, id):
     halls = Hall.objects.all()
     event = Event.objects.get(id=id)
     old_event_halls = event.eventhall.all().values_list("hall", flat=True)
-    if request.method == "POST":
-        deletepreviouscourses = event.eventhall.all().delete()
-        data = request.POST
-        selectedHalls = data.getlist("selectedhalls")
 
-        for eachHall in selectedHalls:
-            hall = Hall.objects.get(id=eachHall)
+    if request.method == "POST":
+        # Delete previously selected halls for the event
+        delete_previous_halls = event.eventhall.all().delete()
+        data = request.POST
+        selected_halls = data.getlist("selectedhalls")
+
+        # Add newly selected halls for the event
+        for each_hall in selected_halls:
+            hall = Hall.objects.get(id=each_hall)
             EventHalls.objects.create(event=event, hall=hall)
+
+        # Delete existing allocations and check if new allocations are possible
         allocations = event.eventallocation.all()
         allocations.delete()
+        # call the allocation function wto check and allocate the seats to selected students
         eligible = allocation(id)
 
-        if eligible == False:
-
+        if not eligible:
             messages.error(request, "Not enough seats for all students")
             return redirect("/create_new_event_halls/" + id)
+
+        # Redirect to view seat allocations for the event
         return redirect("/view_seat_allocations/" + id)
+
     context = {"homeurl": "admin_home", "halls": halls, "oldhalls": old_event_halls}
     return render(request, "createNewEventHalls.html", context)
 
@@ -911,56 +989,68 @@ def delete_event(request, id):
 
 @user_passes_test(is_admin, login_url="login_page")
 def view_seat_allocations(request, id):
+    # Get the event and related information
     event = Event.objects.get(id=id)
     event_halls = event.eventhall.all()
-    allHalls = [event_hall.hall for event_hall in event_halls]
+    all_halls = [event_hall.hall for event_hall in event_halls]
     hall = event_halls.first().hall
     allocations = event.eventallocation.all()
+
+    # Handle POST request to change the selected hall
     if request.method == "POST":
         data = request.POST
-        selectedHall = int(data.get("selectedHall"))
+        selected_hall_id = int(data.get("selectedHall"))
 
+        # Find the selected hall among the event halls
         for event_hall in event_halls:
-
-            if event_hall.hall.id == selectedHall:
+            if event_hall.hall.id == selected_hall_id:
                 hall = event_hall.hall
                 break
-    hallcolumns = hall.columnspaces.all()
-    hallrows = hall.rowspaces.all()
-    seatNumbers = hall.seats.all()
+
+    # Get seat, column, and row information for the selected hall
+    hall_columns = hall.columnspaces.all()
+    hall_rows = hall.rowspaces.all()
+    seat_numbers = hall.seats.all()
+
+    # Prepare context for rendering the template
     context = {
         "style": "view_seat_allocations",
         "jslink": "view_seat_allocations",
         "homeurl": "admin_home",
-        "seatNumbers": seatNumbers,
-        "hallColumns": hallcolumns,
-        "hallRows": hallrows,
+        "seatNumbers": seat_numbers,
+        "hallColumns": hall_columns,
+        "hallRows": hall_rows,
         "allocations": allocations,
         "currentHall": hall,
-        "allHalls": allHalls,
+        "allHalls": all_halls,
     }
     return render(request, "viewSeatAllocations.html", context)
 
 
 @user_passes_test(is_teacher, login_url="login_page")
 def view_seat_allocations_teacher(request, id):
+    # Get the event and related information
     event = Event.objects.get(id=id)
     event_halls = event.eventhall.all()
     allHalls = [event_hall.hall for event_hall in event_halls]
     hall = event_halls.first().hall
     allocations = event.eventallocation.all()
+    # Handle POST request to change the selected hall
     if request.method == "POST":
         data = request.POST
         selectedHall = int(data.get("selectedHall"))
-
+        # Find the selected hall among the event halls
         for event_hall in event_halls:
-
             if event_hall.hall.id == selectedHall:
                 hall = event_hall.hall
                 break
+
+    # Get seat, column, and row information for the selected hall
     hallcolumns = hall.columnspaces.all()
     hallrows = hall.rowspaces.all()
     seatNumbers = hall.seats.all()
+
+    # Prepare context for rendering the template
     context = {
         "style": "view_seat_allocations",
         "jslink": "view_seat_allocations",
@@ -1011,13 +1101,19 @@ def view_seat_allocations_student(request, id):
     student = currentuser.student
     event = Event.objects.get(id=id)
 
+    # Retrieve allocations for the current student in the specified event
     allocations = Allocation.objects.filter(event=event, student=student)
+    # Retrieve the seat assigned to the student
     seat = allocations[0].seat
+    # Retrieve the hall associated with the seat
     hall = seat.hall
 
+    # Extract information about column spaces, row spaces, and seat numbers for the hall
     hallcolumns = hall.columnspaces.all()
     hallrows = hall.rowspaces.all()
     seatNumbers = hall.seats.all()
+
+    # Prepare context to be passed to the template
     context = {
         "style": "view_seat_allocations",
         "jslink": "view_hall_layout",
@@ -1028,70 +1124,80 @@ def view_seat_allocations_student(request, id):
         "allocations": allocations,
         "currentHall": hall,
     }
+
+    # Render the template with the provided context
     return render(request, "viewSeatAllocations.html", context)
 
 
 def allocation(id):
-
+    # Get the event and related information
     event = Event.objects.get(id=id)
     event_courses = event.eventcourse.all()
     event_halls = event.eventhall.all()
     firstCourse = event_courses.first().course
     secondCourse = event_courses.all()[1].course if event_courses.count() > 1 else None
     thirdCourse = event_courses.all()[2].course if event_courses.count() > 2 else None
+    # Initialize counters for students and seats
     countStudents = 0
-
     countSeats = 0
+    # Check if there are two courses
     if thirdCourse is None:
+        # to check whether there are enough seats for students for this course
         if firstCourse is not None:
             countSeats = 0
+            # Calculate the number of students in this course
             countStudents = (firstCourse.students.all()).count()
+            # Calculate the number of available seats in each hall
             for event_hall in event_halls:
                 hall = event_hall.hall
                 seats = hall.seats.exclude(is_deleted=True)
                 for seat in seats:
                     if seat.column % 2 == 0:
                         countSeats = countSeats + 1
-
+            # If there are not enough seats for all students, delete event halls and return False
             if countSeats < countStudents:
                 event.eventhall.all().delete()
                 return False
-
+        # to check whether there are enough seats for students for this course
         if secondCourse is not None:
             countSeats = 0
+            # Calculate the number of students in this course
             countStudents = (secondCourse.students.all()).count()
+            # Calculate the number of available seats in each hall
             for event_hall in event_halls:
                 hall = event_hall.hall
                 seats = hall.seats.exclude(is_deleted=True)
                 for seat in seats:
                     if seat.column % 2 != 0:
                         countSeats = countSeats + 1
-
+            # If there are not enough seats for all students, delete event halls and return False
             if countSeats < countStudents:
                 event.eventhall.all().delete()
                 return False
-
+    # Check if there are all three courses
     elif thirdCourse is not None:
-
         countSeats = 0
+        # Calculate the number of students in this course
         countStudents = (firstCourse.students.all()).count()
+        # Calculate the number of available seats in each hall
         for event_hall in event_halls:
             hall = event_hall.hall
             seats = hall.seats.exclude(is_deleted=True)
-
             firstCourseColumns = []
             for column in range(0, hall.columns, 3):
                 firstCourseColumns.append(column)
             for seat in seats:
                 if seat.column in firstCourseColumns:
                     countSeats = countSeats + 1
-
+        # If there are not enough seats for all students, delete event halls and return False
         if countSeats < countStudents:
             event.eventhall.all().delete()
             return False
 
         countSeats = 0
+        # Calculate the number of students in this course
         countStudents = (secondCourse.students.all()).count()
+        # Calculate the number of available seats in each hall
         for event_hall in event_halls:
             hall = event_hall.hall
             seats = hall.seats.exclude(is_deleted=True)
@@ -1103,13 +1209,15 @@ def allocation(id):
             for seat in seats:
                 if seat.column in secondCourseColumns:
                     countSeats = countSeats + 1
-
+        # If there are not enough seats for all students, delete event halls and return False
         if countSeats < countStudents:
             event.eventhall.all().delete()
             return False
 
         countSeats = 0
+        # Calculate the number of students in this course
         countStudents = (thirdCourse.students.all()).count()
+        # Calculate the number of available seats in each hall
         for event_hall in event_halls:
             hall = event_hall.hall
             seats = hall.seats.exclude(is_deleted=True)
@@ -1120,16 +1228,16 @@ def allocation(id):
             for seat in seats:
                 if seat.column in thirdCourseColumns:
                     countSeats = countSeats + 1
-
+        # If there are not enough seats for all students, delete event halls and return False
         if countSeats < countStudents:
             event.eventhall.all().delete()
             return False
 
     for event_hall in event_halls:
         hall = event_hall.hall
-
         seats = hall.seats.exclude(is_deleted=True)
         firstCourseStudents = firstCourse.students.all().order_by("?")
+        # if ony one course Allocate seats for the first course
         if firstCourse is not None and secondCourse is None and thirdCourse is None:
 
             for firstCourseStudent in firstCourseStudents:
@@ -1145,13 +1253,13 @@ def allocation(id):
                                 event=event, seat=seat, student=firstCourseStudent
                             )
                             break
-
+        # if two courses Allocate seats for the first and second courses
         elif (
             firstCourse is not None and secondCourse is not None and thirdCourse is None
         ):
 
             secondCourseStudents = secondCourse.students.all().order_by("?")
-
+            # Allocate seats for the first course
             for firstCourseStudent in firstCourseStudents:
 
                 for seat in seats:
@@ -1165,7 +1273,7 @@ def allocation(id):
                                 event=event, seat=seat, student=firstCourseStudent
                             )
                             break
-
+            # Allocate seats for the second course
             for secondCourseStudent in secondCourseStudents:
 
                 for seat in seats:
@@ -1179,7 +1287,7 @@ def allocation(id):
                                 event=event, seat=seat, student=secondCourseStudent
                             )
                             break
-
+        # if three courses Allocate seats for the all three course
         elif (
             firstCourse is not None
             and secondCourse is not None
@@ -1188,7 +1296,7 @@ def allocation(id):
 
             secondCourseStudents = secondCourse.students.all().order_by("?")
             thirdCourseStudents = thirdCourse.students.all().order_by("?")
-
+            # Allocate seats for the first course
             for firstCourseStudent in firstCourseStudents:
 
                 firstCourseSeatColumns = []
@@ -1207,7 +1315,7 @@ def allocation(id):
                                 event=event, seat=seat, student=firstCourseStudent
                             )
                             break
-
+            # Allocate seats for the second course
             for secondCourseStudent in secondCourseStudents:
 
                 secondCourseSeatColumns = []
@@ -1224,7 +1332,7 @@ def allocation(id):
                                 event=event, seat=seat, student=secondCourseStudent
                             )
                             break
-
+            # Allocate seats for the third course
             for thirdCourseStudent in thirdCourseStudents:
 
                 thirdCourseSeatColumns = []
@@ -1241,11 +1349,6 @@ def allocation(id):
                                 event=event, seat=seat, student=thirdCourseStudent
                             )
                             break
-
-
-def demo(request):
-    context = {"homeurl": "admin_home", "form": EventForm()}
-    return render(request, "demo.html", context)
 
 
 def get_section(numberofstudents, lastsection):

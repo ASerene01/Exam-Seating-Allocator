@@ -1,4 +1,5 @@
 {%extends "base.html"%} {%block start%} {% csrf_token %}
+<!-- Container for events -->
 <!--prettier-ignore-->
 <div class="container mt-5">
   <div class="d-flex justify-content-center">
@@ -10,7 +11,7 @@
     {% for message in messages %} {{message}} {% endfor %}
   </div>
   {% endif %}
-
+  <!-- Event cards -->
   <div class="row">
     {%for event in events%}
     <div class="col-md-4 mt-4">
@@ -19,12 +20,14 @@
           class="card-header d-flex justify-content-between align-items-center"
         >
           <h5 class="card-title">{{ event.name }}</h5>
+          <!-- Button to view seat allocations -->
           <a
             href="/view_seat_allocations_student/{{ event.id }}"
             class="btn btn-success m-2"
             >View Seat</a
           >
         </div>
+         <!-- Event details -->
         <div class="card-body">
           <h6><span>Date:</span> {{ event.date }}</h6>
           <hr />
@@ -32,20 +35,24 @@
 
           <h6><span>End Time:</span> {{ event.end_time}}</h6>
           <hr />
+           <!-- Course associated with the event -->
           <h6>Course:</h6>
           {% for event_course in event.eventcourse.all %} 
           {%for course in courses%} 
+          
           {%if event_course.course == course%}
-          <h6 class="card-subtitle mb-2 text-muted">
+          <h6 class="card-subtitle mb-2 text-light">
+            
             {{ event_course.course.name }}
           </h6>
           {%endif%} {%endfor%} {% endfor %}
           <hr />
+          <!-- Hall associated with the event -->
           <h6>Hall:</h6>
           {% for eventwithhall in events_with_halls %} 
           {%if eventwithhall.event == event%}
           
-          <h6 class="card-subtitle mb-2 text-muted">
+          <h6 class="card-subtitle mb-2 text-light">
             {{eventwithhall.hall.name}}
           </h6>
           {%endif%} {%endfor%} 

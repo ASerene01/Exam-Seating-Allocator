@@ -24,7 +24,6 @@ from api.views import *
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("demo/", demo, name="demo"),
     path("", login_page, name="login_page"),
     path("admin_home/", admin_home, name="admin_home"),
     path("student_home/", student_home, name="student_home"),

@@ -1,53 +1,65 @@
-{%extends "base.html"%} {%block start%} {% csrf_token %}
+{% extends "base.html" %} {% block start %} {% csrf_token %}
+<!-- Container for page content -->
 <div class="container mt-5">
+  <!-- Button to redirect for user registration -->
   <div class="d-flex justify-content-end">
     <a class="btn register-button btn-lg" href="/register_user/">Register</a>
   </div>
   <div class="d-flex justify-content-center">
     <a class="btn register-button btn-lg" href="/seed_students/">Seed</a>
   </div>
-  {%if users.exists%}
+  <!-- Display table if users exist -->
+  {% if users.exists %}
   <table class="table table-dark mt-4">
-  <thead>
-    <tr>
-      <th scope="col">#</th>
-      <th scope="col">Name</th>
-      <th scope="col">Username</th>
-      <th scope="col">Email</th>
-      <th scope="col">UserType</th>
-      <th scope="col">Image</th>
-      <th scope="col">Action</th>
-    </tr>
-  </thead>
-  <tbody >
-    {%for user in users%}
-    <tr>
-      <th scope="row">{{forloop.counter}}</th>
-      <td>{{user.first_name| capfirst}} {{user.last_name| capfirst}}</td>
-      <td>{{user.username}}</td>
-      <td>{{user.email}}</td>
-      <td>{{user.user_type| capfirst}}</td>
-      <td>
-        <img src="/media/{{user.user_image}}" style="height: 50px" />
-      </td>
-      
-      <td>
-        <a href="/view_user_info/{{user.id}}" class="btn btn-success m-2">View</button>
-         <a href="/update_user/{{user.id}}" class="btn btn-success m-2">Edit</button>
-        <a href="/delete_user/{{user.id}}" class="btn btn-danger m-2">Delete</button>
-         
-      </td>
-    </tr>
-    {%endfor%}
-  </tbody>
-</table>
-{%else%}
-<div class="d-flex justify-content-center">
-<div class="badge fs-4">
-  There are no users to show. Please register new courses
+    <thead>
+      <tr>
+        <th scope="col">#</th>
+        <th scope="col">Name</th>
+        <th scope="col">Username</th>
+        <th scope="col">Email</th>
+        <th scope="col">UserType</th>
+        <th scope="col">Image</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      <!-- Loop through users -->
+      {% for user in users %}
+      <tr>
+        <!-- Counter for row number -->
+        <th scope="row">{{ forloop.counter }}</th>
+        <!-- Display user information -->
+        <td>{{ user.first_name|capfirst }} {{ user.last_name|capfirst }}</td>
+        <td>{{ user.username }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.user_type|capfirst }}</td>
+        <!-- Display user image -->
+        <td>
+          <img src="/media/{{ user.user_image }}" style="height: 50px" />
+        </td>
+        <!-- Actions for user management -->
+        <td>
+          <a href="/view_user_info/{{ user.id }}" class="btn btn-success m-2"
+            >View</a
+          >
+          <a href="/update_user/{{ user.id }}" class="btn btn-success m-2"
+            >Edit</a
+          >
+          <a href="/delete_user/{{ user.id }}" class="btn btn-danger m-2"
+            >Delete</a
+          >
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <!-- Display message if no users exist -->
+  {% else %}
+  <div class="d-flex justify-content-center">
+    <div class="badge fs-4">
+      There are no users to show. Please register new courses
+    </div>
+  </div>
+  {% endif %}
 </div>
-<div>
-{%endif%}
-</div>
-    {%endblock%}
-  
+{% endblock %}
