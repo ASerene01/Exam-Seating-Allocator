@@ -14,39 +14,41 @@
     </div>
 
     {% endif %}
-
+    <!-- Event details inputs with pre-filled values -->
     <div class="col mb-3">
-      <div class="form-floating mb-3">
+      <div class="mb-3">
+        <label class="mb-3 form-label" for="InputEvent">Event Name</label>
         <input
           type="text"
-          class="form-control mb-5 w-50 inputfield"
+          class="form-control mb-4 w-50 inputfield"
           id="InputEvent"
           name="event"
           placeholder="Event Name"
           value="{{event.name}}"
           required
         />
-        <label class="mb-3 form-label" for="InputEvent">Event Name</label>
       </div>
-
+      <label class="mb-2 form-label" for="InputEvent">Date</label>
       <div class="mb-3">
-        <input type="date" class="form-control mb-5 w-50 inputfield" name="Date"
+        <input type="date" class="form-control mb-4 w-50 inputfield" name="Date"
         value="{{ event.date|date:"Y-m-d" }}" required />
       </div>
 
       <div class="mb-3">
+        <label class="mb-2 form-label" for="InputEvent">Start Time</label>
         <input
           type="time"
-          class="form-control mb-5 w-50 inputfield"
+          class="form-control mb-4 w-50 inputfield"
           name="startTime"
           value="{{ event.start_time|time:'H:i' }}"
           required
         />
       </div>
       <div class="mb-3">
+        <label class="mb-2 form-label" for="InputEvent">End Time</label>
         <input
           type="time"
-          class="form-control mb-5 w-50 inputfield"
+          class="form-control mb-4 w-50 inputfield"
           name="endTime"
           value="{{event.end_time|time:'H:i'}}"
           required

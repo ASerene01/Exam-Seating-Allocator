@@ -1,7 +1,7 @@
 {%extends "base.html"%} {%block start%}
 <div class="container mt-5">
   <form
-    class="col-6 mx-auto card p-3 shadow-lg"
+    class="col-6 mx-auto card p-3 shadow-lg forms"
     method="post"
     enctype="multipart/form-data"
   >
@@ -19,7 +19,7 @@
         <label for="InputFirstName" class="form-label">First Name</label>
         <input
           type="text"
-          class="form-control"
+          class="form-control bg-dark text-light"
           id="InputFirstName"
           name="firstname"
           value="{{ userdetails.first_name }}"
@@ -29,7 +29,7 @@
         <label for="InputLastName" class="form-label">Last Name</label>
         <input
           type="text"
-          class="form-control"
+          class="form-control bg-dark text-light"
           id="InputLastName"
           name="lastname"
           value="{{ userdetails.last_name }}"
@@ -40,7 +40,7 @@
       <label for="InputUsername" class="form-label">Username</label>
       <input
         type="text"
-        class="form-control"
+        class="form-control bg-dark text-light"
         id="InputUsername"
         name="username"
         value="{{ userdetails.username }}"
@@ -50,7 +50,7 @@
       <label for="InputEmail" class="form-label">Email</label>
       <input
         type="email"
-        class="form-control"
+        class="form-control bg-dark text-light"
         id="InputEmail"
         name="email"
         value="{{ userdetails.email }}"
@@ -65,7 +65,7 @@
         <select
           name="user_type"
           id="userType"
-          class="form-select bg-dark text-white mb-3"
+          class="form-select bg-dark text-light mb-3"
           aria-label="Student"
           style="width: 30%"
         >
@@ -91,7 +91,7 @@
           <select
             name="fieldofstudy"
             id="fieldofstudy"
-            class="form-select bg-dark text-white mb-3"
+            class="form-select bg-dark text-light mb-3"
             aria-label="Student"
             style="width: 30%"
           >
@@ -115,7 +115,7 @@
           <select
             name="year"
             id="year"
-            class="form-select bg-dark text-white mb-3"
+            class="form-select bg-dark text-light mb-3"
             aria-label="Student"
             style="width: 30%"
           >
@@ -134,7 +134,7 @@
             {% endif %}
           </select>
         </div>
-        <div class="col">
+        <div class="col-">
           <label for="semester" class="form-label">Semester</label>
           <select
             name="semester"
@@ -153,13 +153,13 @@
             {% endif %}
           </select>
         </div>
-        <div class="col section-options">
+        <div class="col- section-options">
           <label for="section" class="form-label">Section</label>
           <!-- prettier-ignore -->
           <select
             name="section"
             id="section"
-            class="form-select bg-dark text-white mb-3"
+            class="form-select bg-dark text-light mb-3"
             aria-label="Student"
             style="width: 30%"
           >
@@ -179,6 +179,50 @@
           {% endfor %}
         </div>
       </div>
+      {%else%}
+      <div class="col- student-options">
+        <div class="col-">
+          <label for="fieldofstudy" class="form-label">Field of Study</label>
+          <select
+            name="fieldofstudy"
+            id="fieldofstudy"
+            class="form-select bg-dark text-white mb-3"
+            aria-label="Student"
+            style="width: 30%"
+          >
+            <option selected value="computing">Computing</option>
+            <option value="multimedia">Multimedia</option>
+            <option value="networking">Networking</option>
+          </select>
+        </div>
+        <div class="col-">
+          <label for="year" class="form-label">Year</label>
+          <select
+            name="year"
+            id="year"
+            class="form-select bg-dark text-white mb-3"
+            aria-label="Student"
+            style="width: 30%"
+          >
+            <option selected value="first">First</option>
+            <option value="second">Second</option>
+            <option value="third">Third</option>
+          </select>
+        </div>
+        <div class="col-">
+          <label for="semester" class="form-label">Semester</label>
+          <select
+            name="semester"
+            id="semester"
+            class="form-select bg-dark text-white mb-3"
+            aria-label="Student"
+            style="width: 30%"
+          >
+            <option selected value="first">First</option>
+            <option value="second">Second</option>
+          </select>
+        </div>
+      </div>
       {% endif %}
     </div>
     <div class="mb-3">
@@ -186,7 +230,7 @@
       <input
         type="password"
         name="password"
-        class="form-control"
+        class="form-control bg-dark text-light"
         id="exampleInputPassword1"
       />
     </div>
@@ -194,7 +238,11 @@
       <label for="exampleInputPassword1" class="form-label">
         Upload your profile picture
       </label>
-      <input name="user_image" type="file" class="form-control" />
+      <input
+        name="user_image"
+        type="file"
+        class="form-control bg-dark text-light"
+      />
     </div>
     <button type="submit" class="btn btn-primary">Update</button>
   </form>

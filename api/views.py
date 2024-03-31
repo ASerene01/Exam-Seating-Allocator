@@ -496,7 +496,7 @@ def updatecourse(request, id):
                         student.courses.add(course)
         else:
             coursedetails.save()
-        return redirect("/register_course/")
+        return redirect("/view_courses/")
     context = {
         "homeurl": "admin_home",
         "coursedetails": coursedetails,
@@ -861,31 +861,44 @@ def create_new_event(request):
 def edit_event(request, id):
     event = Event.objects.get(id=id)
     if request.method == "POST":
+
+        # Retrieve data from the form
         data = request.POST
         name = data.get("event")
         date = data.get("Date")
         startTime = data.get("startTime")
         endTime = data.get("endTime")
+
+        # Update the event object with the new data
         event.name = name
 
+        # Check if the date or time of the event has been changed
         if (
             str(date) != str(event.date)
             or startTime != event.start_time.strftime("%H:%M")
             or endTime != event.end_time.strftime("%H:%M")
         ):
+            # If changed, check if an event with the same date and time already exists
             eventCheck = Event.objects.filter(
                 date=date, start_time=startTime, end_time=endTime
             )
             if eventCheck.exists():
+                # If an event with the same date and time exists, display a message and redirect
                 messages.info(request, "Event Already There ")
                 return redirect("/edit_event/" + str(event.id))
+
+        # Update the event object with the new date, start time, and end time
         event.date = date
         event.start_time = startTime
         event.end_time = endTime
-        event.save()
-        id = event.id
-        return redirect("/create_new_event_courses/" + str(id))
 
+        # Save the updated event object
+        event.save()
+
+        # Redirect to the page for creating new event courses
+        return redirect("/create_new_event_courses/" + str(event.id))
+
+    # If the request method is GET, render the edit event form with the event details
     context = {"homeurl": "admin_home", "style": "create_new_event", "event": event}
     return render(request, "editEvent.html", context)
 
@@ -951,7 +964,7 @@ def create_new_event_halls(request, id):
         # call the allocation function wto check and allocate the seats to selected students
         eligible = allocation(id)
 
-        if not eligible:
+        if eligible == False:
             messages.error(request, "Not enough seats for all students")
             return redirect("/create_new_event_halls/" + id)
 
@@ -978,12 +991,18 @@ def regenerate_allocations(request, id):
 
 @user_passes_test(is_admin, login_url="login_page")
 def delete_event(request, id):
+    # Retrieve the event object to be deleted
     event = Event.objects.get(id=id)
+    # Attempt to delete the event
     deleted = event.delete()
+    # Check if the event was successfully deleted
     if deleted:
+        # If the event was deleted successfully, display a success message
         messages.success(request, "Event " + event.name + " has been deleted")
     else:
+        # If the event was not deleted, display an error message
         messages.error(request, "Event was not deleted ")
+    # Redirect to the admin events view page
     return redirect("admin_events_view")
 
 
@@ -1154,8 +1173,11 @@ def allocation(id):
                 for seat in seats:
                     if seat.column % 2 == 0:
                         countSeats = countSeats + 1
+            print(countSeats)
+            print(countStudents)
             # If there are not enough seats for all students, delete event halls and return False
             if countSeats < countStudents:
+                print("Hello")
                 event.eventhall.all().delete()
                 return False
         # to check whether there are enough seats for students for this course

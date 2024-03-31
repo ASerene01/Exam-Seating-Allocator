@@ -35,7 +35,10 @@
 
         <!-- Actions for hall management -->
         <td>
-          <a href="/delete_hall/{{ hall.id }}" class="btn btn-danger m-2"
+          <a
+            href="/delete_hall/{{ hall.id }}"
+            class="btn btn-danger m-2"
+            onclick="return confirm('Are you sure you want to delete this hall?');"
             >Delete</a
           >
           <a href="/update_hall/{{ hall.id }}" class="btn btn-success m-2"

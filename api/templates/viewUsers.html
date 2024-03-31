@@ -45,7 +45,10 @@
           <a href="/update_user/{{ user.id }}" class="btn btn-success m-2"
             >Edit</a
           >
-          <a href="/delete_user/{{ user.id }}" class="btn btn-danger m-2"
+          <a
+            href="/delete_user/{{ user.id }}"
+            class="btn btn-danger m-2"
+            onclick="return confirm('Are you sure you want to delete this user?');"
             >Delete</a
           >
         </td>
