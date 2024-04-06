@@ -921,7 +921,7 @@ def create_new_event_courses(request, id):
         for each_course in selectedCourses:
             course = Course.objects.get(id=each_course)
             EventCourses.objects.create(event=event, course=course)
-
+            print("Hello")
         return redirect("/create_new_event_halls/" + id)
 
     allYears = courses.values_list("year", flat=True).distinct()
@@ -981,10 +981,13 @@ def regenerate_allocations(request, id):
     allocations = event.eventallocation.all()
     allocations.delete()
     eligible = allocation(id)
-
+    print(eligible)
     if eligible == False:
         messages.error(request, "Not enough seats for all students")
         return redirect("/create_new_event_halls/" + id)
+    elif eligible == "noCourse":
+        messages.error(request, "Not courses")
+        return redirect("/create_new_event_courses/" + id)
     return redirect("/view_seat_allocations/" + id)
     context = {"homeurl": "admin_home", "halls": halls}
 
@@ -1010,10 +1013,13 @@ def delete_event(request, id):
 def view_seat_allocations(request, id):
     # Get the event and related information
     event = Event.objects.get(id=id)
+    allocations = event.eventallocation.all()
+    print(not allocations)
+    if not allocations:
+        return redirect("/regenerate_allocations/" + id)
     event_halls = event.eventhall.all()
     all_halls = [event_hall.hall for event_hall in event_halls]
     hall = event_halls.first().hall
-    allocations = event.eventallocation.all()
 
     # Handle POST request to change the selected hall
     if request.method == "POST":
@@ -1152,6 +1158,9 @@ def allocation(id):
     # Get the event and related information
     event = Event.objects.get(id=id)
     event_courses = event.eventcourse.all()
+    if not event_courses:
+        return "noCourse"
+
     event_halls = event.eventhall.all()
     firstCourse = event_courses.first().course
     secondCourse = event_courses.all()[1].course if event_courses.count() > 1 else None
@@ -1271,6 +1280,7 @@ def allocation(id):
                             event=event, student=firstCourseStudent
                         )
                         if not check.exists() and not allocated.exists():
+                            print("Hello")
                             Allocation.objects.create(
                                 event=event, seat=seat, student=firstCourseStudent
                             )
