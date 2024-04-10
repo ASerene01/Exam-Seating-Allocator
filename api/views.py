@@ -8,6 +8,7 @@ from django.shortcuts import render, redirect
 from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
+from django.core.mail import BadHeaderError, send_mail
 
 # Create your views here.
 User = get_user_model()
@@ -247,6 +248,15 @@ def register_user(request):
             teacher_group, created = Group.objects.get_or_create(name="Teachers")
             user.groups.add(teacher_group)
         messages.info(request, "Successfully registered")
+        try:
+            sendemail = send_mail(
+                subject="Exam Seating Allocator (Registration)",
+                message="Thank you for registration",
+                from_email="np01cp4a210096@islingtoncollege.edu.np",
+                recipient_list=[email],
+            )
+        except Exception:
+            print("failed to send message")
         return redirect("/view_users/")
     querysetcourse = Course.objects.all()
     context = {
@@ -852,6 +862,7 @@ def create_new_event(request):
 
     context = {
         "homeurl": "admin_home",
+        "jslink": "create_new_event",
         "style": "create_new_event",
         "page_url": "event",
     }

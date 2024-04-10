@@ -138,3 +138,11 @@ SESSION_EXPIRE_AT_BROWSER_CLOSE = False
 
 # Sets the age of session cookies in seconds (1 week in this case)
 SESSION_COOKIE_AGE = 7 * 24 * 60 * 60
+
+
+EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
+EMAIL_HOST = "smtp-relay.brevo.com"
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST_USER = "np01cp4a210096@islingtoncollege.edu.np"
+EMAIL_HOST_PASSWORD = "1WyL2FN9EkCIdp7Z"
