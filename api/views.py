@@ -9,6 +9,7 @@ from .models import *
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.decorators import user_passes_test
 from django.core.mail import BadHeaderError, send_mail
+from django.db.models import Q
 
 # Create your views here.
 User = get_user_model()
@@ -845,12 +846,12 @@ def create_new_event(request):
         endTime = data.get("endTime")
 
         # Check if the event already exists
-        eventCheck = Event.objects.filter(
-            date=date, start_time=startTime, end_time=endTime
-        )
-        if eventCheck.exists():
-            messages.info(request, "Event already exists.")
-            return redirect("/create_new_event/")
+        # eventCheck = Event.objects.filter(
+        #    date=date, start_time=startTime, end_time=endTime
+        # )
+        # if eventCheck.exists():
+        # messages.info(request, "Event already exists.")
+        # return redirect("/create_new_event/")
 
         # Create a new event
         event = Event.objects.create(
@@ -921,7 +922,22 @@ def create_new_event_courses(request, id):
     currentfield = "computing"
     # list of all the previously selected courses
     old_event_courses = event.eventcourse.all().values_list("course", flat=True)
+    overlaps = (
+        Event.objects.filter(date=event.date)
+        .exclude(id=id)
+        .filter(
+            Q(start_time__lte=event.end_time, start_time__gte=event.start_time)
+            | Q(end_time__lte=event.end_time, end_time__gte=event.start_time)
+        )
+    )
 
+    overlapping_course_ids = set()
+    if overlaps.count() >= 1:
+        for overlap_event in overlaps:
+            overlapping_course_ids.update(
+                overlap_event.eventcourse.values_list("course", flat=True)
+            )
+        courses = courses.exclude(id__in=overlapping_course_ids)
     if request.method == "POST":
         # Delete previously selected courses for the event
         delete_previous_courses = event.eventcourse.all().delete()
@@ -931,8 +947,8 @@ def create_new_event_courses(request, id):
         # Add newly selected courses for the event
         for each_course in selectedCourses:
             course = Course.objects.get(id=each_course)
+
             EventCourses.objects.create(event=event, course=course)
-            print("Hello")
         return redirect("/create_new_event_halls/" + id)
 
     allYears = courses.values_list("year", flat=True).distinct()
@@ -956,8 +972,24 @@ def create_new_event_courses(request, id):
 def create_new_event_halls(request, id):
     halls = Hall.objects.all()
     event = Event.objects.get(id=id)
-    old_event_halls = event.eventhall.all().values_list("hall", flat=True)
 
+    old_event_halls = event.eventhall.all().values_list("hall", flat=True)
+    overlaps = (
+        Event.objects.filter(date=event.date)
+        .exclude(id=id)
+        .filter(
+            Q(start_time__lte=event.end_time, start_time__gte=event.start_time)
+            | Q(end_time__lte=event.end_time, end_time__gte=event.start_time)
+        )
+    )
+
+    overlapping_hall_ids = set()
+    if overlaps.count() >= 1:
+        for overlap_event in overlaps:
+            overlapping_hall_ids.update(
+                overlap_event.eventhall.values_list("hall", flat=True)
+            )
+        halls = halls.exclude(id__in=overlapping_hall_ids)
     if request.method == "POST":
         # Delete previously selected halls for the event
         delete_previous_halls = event.eventhall.all().delete()
