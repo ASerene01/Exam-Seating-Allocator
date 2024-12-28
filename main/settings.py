@@ -144,5 +144,5 @@ EMAIL_BACKEND = "django.core.mail.backends.smtp.EmailBackend"
 EMAIL_HOST = "smtp-relay.brevo.com"
 EMAIL_USE_TLS = True
 EMAIL_PORT = 587
-EMAIL_HOST_USER = "np01cp4a210096@islingtoncollege.edu.np"
-EMAIL_HOST_PASSWORD = "1WyL2FN9EkCIdp7Z"
+EMAIL_HOST_USER = "null"
+EMAIL_HOST_PASSWORD = "null"
